@@ -27,7 +27,7 @@ while IFS= read -r -d '' file; do
   echo "✅ Valid skill: $rel"
 done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
 
-for script in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.sh; do
+for script in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.sh "$ROOT_DIR"/skills/basic/init-agents/templates/githooks/*; do
   rel="${script#"$ROOT_DIR"/}"
   bash -n "$script"
   echo "✅ Valid bash syntax: $rel"

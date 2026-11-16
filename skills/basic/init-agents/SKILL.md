@@ -1,6 +1,6 @@
 ---
 name: init-agents
-description: "Initialize the target repository for AI agent engineering: explore the stack, grill the user on project architecture, Kanban tracker, Docker dev-state sandboxing, and agent roles, then generate .agents/workflow.json, worktree sandbox scripts, verify.sh, focused sub-agents, and a Smart-Zone AGENTS.md/CLAUDE.md."
+description: "Initialize the target repository for AI agent engineering: explore the stack, grill the user on project architecture, Kanban tracker, Docker dev-state sandboxing, and agent roles, then generate .agents/workflow.json, worktree sandbox scripts, universal git hooks, verify.sh, focused sub-agents, and a Smart-Zone AGENTS.md."
 disable-model-invocation: true
 ---
 
@@ -151,17 +151,19 @@ Using the templates in `./templates/` as your baseline, customize and write the 
    - Inject the project's exact coding standards, deep-module rules, and vertical-slice requirements directly into `reviewer.md` (**Push model**).
    - Symlink or copy `.agents/agents/*.md` into `.claude/agents/` so Claude Code, Antigravity, and other tools discover them natively.
 
-7. **Optional `.mcp.json` for Chrome DevTools MCP & Safety/Verify Hooks (`.claude/settings.json`)**:
+7. **Universal Git Hooks + Agent Hooks (Works in Codex, Claude, Antigravity, Cursor)**:
+   - Always configure **both** layers during `/init-agents` (regardless of which agent you ran `/init-agents` in) so you can switch between Codex, Claude Code, Antigravity, and Cursor at any time:
+     1. **Universal Git Hooks (`.agents/githooks/pre-commit` & `pre-push`):** Copy from `templates/githooks/*` (`chmod +x`) and run `git config core.hooksPath .agents/githooks`.
+        - `pre-commit`: Blocks `.env` commits and runs `./.agents/scripts/verify.sh --affected` on every commit in every agent.
+        - `pre-push`: Blocks non-interactive agent pushes until the user approves (`ALLOW_GIT_PUSH=1 git push`).
+     2. **Interactive Agent Hooks (`.claude/settings.json`):** Copy `templates/scripts/hook-pre-bash.sh` and `hook-stop-verify.sh` into `.agents/scripts/` (`chmod +x`) and wire them into `.claude/settings.json` (from `templates/claude-settings.json.tpl`).
    - If the project has a frontend and `browserMcp.enabled == true`, create or merge `chrome-devtools` (`npx -y chrome-devtools-mcp@latest --headless --isolated`) into `.mcp.json` at the repo root.
-   - Copy `templates/scripts/hook-pre-bash.sh` and `templates/scripts/hook-stop-verify.sh` into `.agents/scripts/` (`chmod +x`) and wire them into `.claude/settings.json` (from `templates/claude-settings.json.tpl`):
-     - **`PreToolUse` (`hook-pre-bash.sh`):** Hard-blocks (`deny`) destructive commands (`git push --force`, `git reset --hard`, `git clean -f`, `git add .env`, `rm -rf ..`) and prompts the user (`ask`) before any normal `git push` so the human always controls remote pushes.
-     - **`Stop` (`hook-stop-verify.sh`):** Automatically runs `./.agents/scripts/verify.sh --affected` when code was modified before allowing the agent to finish its turn.
 
 8. **Kanban Directories & Glossary**:
    - If `kanban.provider == "local"`, create `.agents/specs/` and `.agents/tickets/`.
    - Create or update `GLOSSARY.md` at the repo root with core domain terms discovered during reconnaissance.
    - Ensure `.worktrees/` is added to `.gitignore`.
 
-9. **Concise `CLAUDE.md` or `AGENTS.md`** (from `templates/AGENTS.md.tpl`):
-   - Edit whichever file already exists (`CLAUDE.md` or `AGENTS.md`), or create `AGENTS.md` (with a symlink `CLAUDE.md -> AGENTS.md`) if neither exists.
+9. **Concise `AGENTS.md`** (from `templates/AGENTS.md.tpl`):
+   - Create or update `AGENTS.md` at the repository root (supported natively by Claude Code, Codex, Antigravity, Cursor, and Windsurf—no duplicate `CLAUDE.md` needed).
    - Keep it **under 100 lines** so every session starts cleanly inside the Smart Zone (<100k tokens).
