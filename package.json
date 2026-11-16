@@ -1,0 +1,27 @@
+{
+  "name": "agents-workflow",
+  "version": "1.0.0",
+  "private": false,
+  "description": "Agentic engineering workflow skills: Grill-Me, Vertical Slices (Tracer Bullets), Deep Modules, and Git Worktrees with Full Docker Dev-State Sandboxing.",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/LatkoNazar/agents-workflow"
+  },
+  "keywords": [
+    "ai-agents",
+    "skills",
+    "claude-code",
+    "codex",
+    "antigravity",
+    "cursor",
+    "worktrees",
+    "docker-sandbox",
+    "vertical-slices",
+    "tdd",
+    "deep-modules"
+  ],
+  "license": "MIT",
+  "scripts": {
+    "validate": "bash scripts/validate-skills.sh"
+  }
+}

@@ -1,0 +1,114 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Agents Workflow Configuration (.agents/workflow.json)",
+  "type": "object",
+  "required": ["project", "kanban", "architecture", "sandbox", "orchestration"],
+  "properties": {
+    "project": {
+      "type": "object",
+      "required": ["name", "stack", "defaultBranch"],
+      "properties": {
+        "name": { "type": "string" },
+        "stack": { "type": "array", "items": { "type": "string" } },
+        "defaultBranch": { "type": "string", "default": "main" }
+      }
+    },
+    "kanban": {
+      "type": "object",
+      "required": ["provider", "specsDir", "ticketsDir"],
+      "properties": {
+        "provider": {
+          "type": "string",
+          "enum": ["local", "github", "gitlab", "trello", "linear", "jira"]
+        },
+        "specsDir": { "type": "string", "default": ".agents/specs" },
+        "ticketsDir": { "type": "string", "default": ".agents/tickets" },
+        "externalConfig": { "type": "object" },
+        "labels": { "type": "object" }
+      }
+    },
+    "architecture": {
+      "type": "object",
+      "required": ["slicingPolicy", "moduleStyle"],
+      "properties": {
+        "slicingPolicy": {
+          "type": "string",
+          "enum": ["vertical-tracer-bullets"]
+        },
+        "moduleStyle": {
+          "type": "string",
+          "enum": ["deep-modules"]
+        },
+        "verticalRoots": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "publicEntrypoints": {
+          "type": "array",
+          "items": { "type": "string" }
+        },
+        "forbidCrossInternalImports": {
+          "type": "boolean",
+          "default": true
+        },
+        "contractSync": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean" },
+            "schemaPath": { "type": "string" },
+            "syncCommand": { "type": "string" }
+          }
+        }
+      }
+    },
+    "sandbox": {
+      "type": "object",
+      "required": ["worktreesDir", "branchPrefix", "cloneState"],
+      "properties": {
+        "worktreesDir": { "type": "string", "default": ".worktrees" },
+        "branchPrefix": { "type": "string", "default": "feat/" },
+        "portOffsetStep": { "type": "integer", "default": 100 },
+        "devComposeProject": { "type": "string" },
+        "devComposeFile": { "type": "string" },
+        "cloneState": {
+          "type": "object",
+          "properties": {
+            "postgres": { "type": "object" },
+            "mongodb": { "type": "object" },
+            "redis": { "type": "object" },
+            "dockerVolumes": { "type": "array", "items": { "type": "string" } },
+            "copyPaths": { "type": "array", "items": { "type": "string" } },
+            "symlinkPaths": { "type": "array", "items": { "type": "string" } }
+          }
+        }
+      }
+    },
+    "orchestration": {
+      "type": "object",
+      "required": ["defaultTemplate", "roles"],
+      "properties": {
+        "defaultTemplate": {
+          "type": "string",
+          "enum": ["single-ticket", "sequential-with-review", "parallel-dag-with-review"]
+        },
+        "maxParallelWorktrees": { "type": "integer", "default": 3 },
+        "maxReviewIterations": { "type": "integer", "default": 3 },
+        "mergeStrategy": { "type": "string", "enum": ["auto-merge", "pr"] },
+        "verifyCommand": { "type": "string" },
+        "serialVerifyMutex": { "type": "boolean", "default": false },
+        "roles": {
+          "type": "object",
+          "additionalProperties": {
+            "type": "object",
+            "required": ["provider", "model"],
+            "properties": {
+              "provider": { "type": "string" },
+              "model": { "type": "string" },
+              "agentFile": { "type": "string" }
+            }
+          }
+        }
+      }
+    }
+  }
+}
