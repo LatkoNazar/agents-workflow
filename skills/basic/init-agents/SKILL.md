@@ -151,8 +151,11 @@ Using the templates in `./templates/` as your baseline, customize and write the 
    - Inject the project's exact coding standards, deep-module rules, and vertical-slice requirements directly into `reviewer.md` (**Push model**).
    - Symlink or copy `.agents/agents/*.md` into `.claude/agents/` so Claude Code, Antigravity, and other tools discover them natively.
 
-7. **Optional `.mcp.json` for Chrome DevTools MCP** (from `templates/mcp.json.tpl`):
-   - If the project has a frontend and `browserMcp.enabled == true`, create or merge `chrome-devtools` (`npx -y chrome-devtools-mcp@latest --headless`) into `.mcp.json` at the repo root.
+7. **Optional `.mcp.json` for Chrome DevTools MCP & Safety/Verify Hooks (`.claude/settings.json`)**:
+   - If the project has a frontend and `browserMcp.enabled == true`, create or merge `chrome-devtools` (`npx -y chrome-devtools-mcp@latest --headless --isolated`) into `.mcp.json` at the repo root.
+   - Copy `templates/scripts/hook-pre-bash.sh` and `templates/scripts/hook-stop-verify.sh` into `.agents/scripts/` (`chmod +x`) and wire them into `.claude/settings.json` (from `templates/claude-settings.json.tpl`):
+     - **`PreToolUse` (`hook-pre-bash.sh`):** Hard-blocks (`deny`) destructive commands (`git push --force`, `git reset --hard`, `git clean -f`, `git add .env`, `rm -rf ..`) and prompts the user (`ask`) before any normal `git push` so the human always controls remote pushes.
+     - **`Stop` (`hook-stop-verify.sh`):** Automatically runs `./.agents/scripts/verify.sh --affected` when code was modified before allowing the agent to finish its turn.
 
 8. **Kanban Directories & Glossary**:
    - If `kanban.provider == "local"`, create `.agents/specs/` and `.agents/tickets/`.
