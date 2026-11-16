@@ -103,6 +103,7 @@ Ensure the core workflow skills exist in `.agents/skills/` (and are linked into 
 - `to-spec`
 - `to-tickets`
 - `tdd`
+- `ddd`
 - `code-review`
 - `implement`
 - `codebase-design`

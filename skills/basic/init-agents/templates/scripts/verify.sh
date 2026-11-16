@@ -86,10 +86,15 @@ elif [[ "$MODE" == "affected" && -n "$CHANGED_FILES" ]]; then
   done < <(echo "$CHANGED_FILES" | grep -oE '^(frontend/)?src/features/[^/]+' | sort -u || true)
 fi
 
-# 1. Deep Module Boundary & Optional UI Token/Anti-Slop Linter
+# 1. Deep Module Boundary, Anti-Cheat Bar & Optional UI Linter
 check_boundaries() {
   if git grep -nE '(from|import).*modules/[^/]+/internal' -- ':!*.agents/*' 2>/dev/null; then
     echo "Direct import from a module's internal/ directory detected! Import only from its public facade."
+    return 1
+  fi
+  # Constraint-Driven Anti-Cheat: forbid newly added @ts-ignore, eslint-disable, type: ignore, or .skip/.only in diff
+  if git diff "$BASE_REF"...HEAD -- ':!*.agents/*' 2>/dev/null | grep -E '^\+.*(@ts-ignore|@ts-expect-error|eslint-disable|type:\s*ignore|noqa|\b(it|test|describe)\.(skip|only)\b)'; then
+    echo "Quality-Bar Lowering Detected: Do not silence typecheckers/linters (@ts-ignore, eslint-disable, type: ignore) or skip tests (.skip/.only)!"
     return 1
   fi
   if [[ -x ".agents/scripts/lint-ui.sh" ]]; then
@@ -97,7 +102,7 @@ check_boundaries() {
   fi
   return 0
 }
-run_step "[1/4] Deep Module boundary & UI check" check_boundaries
+run_step "[1/4] Deep Module boundary, Anti-Cheat & UI check" check_boundaries
 
 # 2. Backend Tests (Affected module vs Full)
 if [[ "$MODE" != "contracts-only" ]]; then

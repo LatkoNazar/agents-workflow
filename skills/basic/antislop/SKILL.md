@@ -42,7 +42,15 @@ Breaking any Hard Gate rule is an automatic **FAIL**:
   3. **Error state:** Pattern: `[What failed]. [Why/cause]. [How to fix].` (e.g., `"Couldn't save changes. Connection lost. Check your connection and try again."`). Never blame the user (`"Invalid input"`), apologize (`"Oops! Something went wrong"`), or show raw error codes.
 
 ### B. Layout, Responsive & Engineering Rules (Vercel + Mobile Gate)
-- **Zero Horizontal Overflow:** `document.documentElement.scrollWidth <= window.innerWidth` on both desktop (`1440px`) and mobile (`390px`).
+- **Zero Horizontal Overflow & Equal Plumb-Line Edges:**
+  - `document.documentElement.scrollWidth <= window.innerWidth` on both desktop (`1440px`) and mobile (`390px`).
+  - Maintain equal left and right content edges (a single vertical plumb line across sections) so sections do not wobble in width.
+- **No Captions Under Visuals & No Fact Twice (`taste-skill`):**
+  - Never add descriptive captions under images, renders, screenshots, or charts.
+  - Never state the same metric, status, or fact twice on the same screen (e.g., repeating a header stat inside a card below).
+- **Quiet Micro-Interactions:**
+  - Linked cards lift at most `1–2px` on hover; never use 3D tilt effects, auto-rotating carousels, or timed tabs.
+  - Never use `transition: all` / `transition-all`—specify exact properties (`transition-colors`, `transform`, `opacity`) and honor `prefers-reduced-motion`.
 - **Flex & Text Truncation:** Flex children holding text must have `min-w-0` so `truncate` or `line-clamp-*` works instead of overflowing the container.
 - **Numeric Alignment:** Always apply `tabular-nums` (`font-variant-numeric: tabular-nums`) on numeric columns, prices, counters, and timers.
 - **Tap Targets & Semantics:**
@@ -103,9 +111,10 @@ Reject these common AI visual clichés whenever they appear as unmotivated defau
   - Never park an `ALL-CAPS` wide-tracked eyebrow pill badge above every `H1`/`H2`.
   - Never use `01 / 02 / 03` numbering unless the content is genuinely a step-by-step sequence.
   - Do not append decorative arrows (`→`, `↗`) to every button.
-- **Effect Dose Caps:**
+- **Effect Dose Caps & Domain Fit:**
   - **Glassmorphism / Blur:** Max 1–2 elements per screen (never navbar + cards + sidebar + modal simultaneously).
   - **Glows & Large Shadows:** Max 1–2 focal elements for elevation hierarchy; never make the whole page float.
+  - **Domain-Matched Effects:** Shader effects, dark tech grounds, and terminal/code visuals belong only on software, developer-tool, gaming, or fintech products—never force them onto everyday service, retail, or local business interfaces.
   - **Generic AI Icons:** No Sparkle, Magic Wand, Robot, Orb, or Diamond icons unless directly relevant to the domain.
 
 ---

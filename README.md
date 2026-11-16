@@ -42,6 +42,7 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
 | **`/to-spec`** | Синтезує результати інтерв'ю у PRD (User Stories, публічні фасади Deep Modules, контракти, межі тестування, Out of Scope). |
 | **`/to-tickets`** | Нарізає PRD у граф **Vertical Slices (Tracer Bullets)** із залежностями `blocked_by` та мітками `afk` / `hitl` у вибраний Kanban. |
 | **`/tdd`** | Суворий цикл Red -> Green інтеграційними тестами по публічному фасаду модуля проти клонованої сандбокс-БД. |
+| **`/ddd`** | **Doubt-Driven Development** (напарник `/tdd`): презумпція сумніву (`CLAIM -> EXTRACT -> DOUBT -> RECONCILE -> STOP`) для перевірки нетривіальних рішень, race conditions, ідемпотентності та граничних станів у чистому вікні з метою спростувати, а не схвалити. |
 | **`/code-review`** | Двовісне рев'ю дифу в чистому контексті двома паралельними субагентами: **Spec & Vertical Completeness** + **Pushed Standards & Deep Modules**. |
 | **`/implement`** | Виконує тікет (або граф тікетів) в ізольованому worktree + Docker-сандбоксі: `worktree-up.sh -> Implementer (--affected) -> Tester -> Reviewer -> Merger (--full) -> worktree-down.sh`. |
 | **`/codebase-design`** | Словник та правила проектування глибоких модулів (Deep Modules, Seams, Locality, Deletion Test). |
@@ -53,6 +54,8 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
 | **`/sync-contracts`** | Зшиває дві мови (напр., Python/Go бекенд + React/TS фронтенд) через єдиний контракт (`openapi.json` / `.proto` -> кодогенерація клієнта та типізованих MSW-моків) у `verify.sh`. |
 | **`/diagnosing-bugs`** | Піднімає клон живого dev-оточення у worktree, відтворює баг падаючим тестом на фасаді і фіксить його без ризику зламати основну dev-базу. |
 | **`/design-an-interface`** | Принцип «Design It Twice»: запускає паралельних субагентів для проектування радикально різних інтерфейсів фасаду перед вибором найкращого. |
+| **`/security-audit`** | Пошук вразливостей на межах довіри (Cloudflare methodology + OWASP/STRIDE): перевірка на IDOR/BOLA, Auth bypass, ін'єкції, race conditions у платежах та витік секретів із відтворенням у клонованому worktree-сандбоксі. |
+| **`/code-simplification`** | Спрощення та вирівнювання коду після зелених тестів (flatten nesting, guard clauses, видалення зайвих обгорток) при 100% збереженні поведінки. |
 
 ---
 
