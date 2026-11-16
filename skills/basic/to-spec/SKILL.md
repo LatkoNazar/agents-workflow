@@ -50,3 +50,4 @@ Explicit list of features, edge cases, or optimizations intentionally excluded f
 ```
 
 4. **Doc-Rot Prevention:** Remind the user that once all tickets from this PRD are implemented and merged, temporary specs can be archived or closed so future agents never read stale requirements.
+5. **Memento Checkpoint (`clear > compact`):** Once the PRD is written to disk, explicitly recommend that the user run `/clear` and start `/to-tickets <path-to-spec>` in a fresh context window so zero grilling sediment carries forward.

@@ -20,13 +20,16 @@ Config lives in `.agents/workflow.json`. Domain vocabulary lives in `GLOSSARY.md
 3. **Vertical Slicing (`/to-tickets`):** Break the PRD into tracer-bullet tickets with `blocked_by` edges and `afk` / `hitl` tags in `{{TICKETS_DIR}}`.
 4. **Implementation (`/implement <ticket-id>`):**
    - Spins up an isolated Git worktree + cloned Docker dev sandbox (`./.agents/scripts/worktree-up.sh <id>`).
-   - **Implementer** executes strict Red-Green-Refactor (`/tdd`) and runs `./.agents/scripts/verify.sh`.
+   - **Implementer** executes strict Red-Green-Refactor (`/tdd`) using fast `./.agents/scripts/verify.sh --affected`.
+   - **Tester** selects and runs the blast-radius test suite in a fresh context window, absorbing raw logs.
    - **Reviewer** checks the diff in a fresh context window (`/code-review`) with pushed project standards.
-   - **Merger** merges the branch, runs `./.agents/scripts/verify.sh`, and destroys the sandbox (`./.agents/scripts/worktree-down.sh <id>`).
+   - **Merger** merges the branch, runs `./.agents/scripts/verify.sh --full`, and destroys the sandbox (`./.agents/scripts/worktree-down.sh <id>`).
+5. **Context Hygiene (`/handoff` & `clear > compact`):** Never use `/compact`. Reset context (`/clear`) after `/to-spec` and `/to-tickets`, or use `/handoff` if an interactive session approaches 80k tokens.
 
 ## 3. Key Commands
 
-- **Verify entire vertical loop:** `./.agents/scripts/verify.sh`
+- **Fast check (affected modules only):** `./.agents/scripts/verify.sh --affected`
+- **Full vertical verification loop:** `./.agents/scripts/verify.sh --full`
 - **Create worktree + clone dev Docker state:** `./.agents/scripts/worktree-up.sh <ticket-id>`
 - **Destroy worktree + purge Docker sandbox:** `./.agents/scripts/worktree-down.sh <ticket-id>`
 - **Run autonomous AFK loop:** `./.agents/scripts/afk-loop.sh`

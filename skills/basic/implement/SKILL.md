@@ -29,21 +29,28 @@ For each active `<ticket-id>`, run:
 This creates `.worktrees/wt-<ticket-id>` on branch `feat/<ticket-id>`, clones the live dev databases (Postgres, MongoDB, Redis), Docker volumes, and local profile/upload folders into sandbox `wt_<ticket-id>`, and writes `.env` with isolated ports.
 
 ### Step 3: Spawn Implementer Sub-Agent (Fresh Context)
-Dispatch a fresh sub-agent rooted at `.worktrees/wt-<ticket-id>` with the instructions from `.agents/agents/implementer.md`:
+Dispatch a fresh sub-agent rooted at `.worktrees/wt-<ticket-id>` with the instructions from `.agents/agents/implementer.md` and the last 5 commits (`git log -n 5 --oneline`):
 - Build the complete **Vertical Slice** (`DB -> Deep Module Facade -> Contract Sync -> Frontend Feature -> Test`).
 - Follow `/tdd` (Red -> Green against the public facade using the cloned sandbox DB).
-- Run `./.agents/scripts/verify.sh` inside `.worktrees/wt-<ticket-id>` until 100% green.
+- Run fast `./.agents/scripts/verify.sh --affected` during coding iterations so only modified vertical modules are tested.
 - Commit all changes to `feat/<ticket-id>`.
 
-### Step 4: Spawn Reviewer Sub-Agent (Fresh Context)
+### Step 4: Spawn Smart Tester Sub-Agent (Fresh Context & Log Shield)
+Dispatch a fresh sub-agent with the instructions from `.agents/agents/tester.md`:
+- Inspect `git diff main...HEAD` inside `.worktrees/wt-<ticket-id>`.
+- Select and run the appropriate verification tier (`--affected` + neighboring module callers + E2E smoke tests if public facades/UI changed).
+- Absorb all raw test logs in its own context window and return only `TEST_VERDICT: PASSED` or `TEST_VERDICT: FAILED` with a concise 5–10 line root-cause diagnosis.
+- If `TEST_VERDICT: FAILED`, pass the diagnosis to a fresh Implementer sub-agent and repeat.
+
+### Step 5: Spawn Reviewer Sub-Agent (Fresh Context)
 Dispatch a fresh sub-agent with the instructions from `.agents/agents/reviewer.md` and `/code-review`:
 - Inspect `git diff main...HEAD` inside `.worktrees/wt-<ticket-id>`.
 - If `REVIEW_DECISION: CHANGES_REQUESTED`, send the exact feedback to a fresh Implementer sub-agent and re-verify (up to `maxReviewIterations`).
 
-### Step 5: Spawn Merger Sub-Agent & Destroy Sandbox
+### Step 6: Spawn Merger Sub-Agent & Destroy Sandbox
 Once `REVIEW_DECISION: APPROVED`:
 - Merge `feat/<ticket-id>` into the base branch (or open a PR if `mergeStrategy == "pr"`).
-- Run `./.agents/scripts/verify.sh` on the base branch to verify integration.
+- Run `./.agents/scripts/verify.sh --full` on the base branch to verify full integration.
 - Mark the ticket as `done` in `.agents/tickets/<ticket-id>.md` (or tracker).
 - Tear down the worktree and purge all cloned Docker databases/containers/volumes:
 ```bash

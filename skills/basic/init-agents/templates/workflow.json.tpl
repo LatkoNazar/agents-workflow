@@ -89,6 +89,7 @@
     ],
     "maxParallelWorktrees": 3,
     "maxReviewIterations": 3,
+    "smartZoneLimitTokens": 100000,
     "mergeStrategy": "auto-merge",
     "verifyCommand": "./.agents/scripts/verify.sh",
     "serialVerifyMutex": false,
@@ -107,6 +108,11 @@
         "provider": "claude",
         "model": "claude-sonnet-4-6",
         "agentFile": ".agents/agents/implementer.md"
+      },
+      "tester": {
+        "provider": "claude",
+        "model": "claude-sonnet-4-6",
+        "agentFile": ".agents/agents/tester.md"
       },
       "reviewer": {
         "provider": "claude",

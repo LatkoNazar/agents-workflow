@@ -73,3 +73,5 @@ Describe the user-observable behavior this slice makes work from start to finish
 - [ ] Frontend feature test / typecheck green
 - [ ] Full `./.agents/scripts/verify.sh` passes with zero errors
 ```
+
+5. **Memento Checkpoint (`clear > compact`):** Once all tickets are saved to disk/tracker, remind the user to run `/clear` before executing `/implement` (or running `./.agents/scripts/afk-loop.sh`) so implementation starts in a 100% clean <100k Smart Zone context.

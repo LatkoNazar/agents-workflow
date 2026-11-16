@@ -36,11 +36,12 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
 | **`/init-agents`** | Сканує проект, опитує тебе по `grill-me`, налаштовує Kanban (`local` / `github` / `trello` / `linear`), генерує `.agents/workflow.json`, скрипти клонування Docker-сандбоксу (`worktree-up.sh`, `worktree-down.sh`, `verify.sh`, `afk-loop.sh`), фокусованих субагентів (`.agents/agents/*.md`) та лаконічний `AGENTS.md`/`CLAUDE.md`. |
 | **`/find-skills`** | Пошук та інсталяція зовнішніх скілів з екосистеми `npx skills` (`skills.sh`) під конкретний стек проекту (напр., React, Next.js, Playwright, FastAPI) або під час `/init-agents`. |
 | **`/grill-me`** | Безжальне інтерв'ю по дереву рішень: 1–2 питання за раунд із рекомендованим варіантом відповіді (`➡️ Recommended`), доки всі деталі архітектури не узгоджені. |
+| **`/handoff`** | Заміна `/compact` за принципом «Мементо»: зберігає чисту вижимку без «осаду» в тимчасовий файл, щоб зробити `/clear` і продовжити в межах <100k Smart Zone. |
 | **`/to-spec`** | Синтезує результати інтерв'ю у PRD (User Stories, публічні фасади Deep Modules, контракти, межі тестування, Out of Scope). |
 | **`/to-tickets`** | Нарізає PRD у граф **Vertical Slices (Tracer Bullets)** із залежностями `blocked_by` та мітками `afk` / `hitl` у вибраний Kanban. |
 | **`/tdd`** | Суворий цикл Red -> Green інтеграційними тестами по публічному фасаду модуля проти клонованої сандбокс-БД. |
 | **`/code-review`** | Двовісне рев'ю дифу в чистому контексті двома паралельними субагентами: **Spec & Vertical Completeness** + **Pushed Standards & Deep Modules**. |
-| **`/implement`** | Виконує тікет (або граф тікетів) в ізольованому worktree + Docker-сандбоксі: `worktree-up.sh -> Implementer -> Reviewer -> Merger -> worktree-down.sh`. |
+| **`/implement`** | Виконує тікет (або граф тікетів) в ізольованому worktree + Docker-сандбоксі: `worktree-up.sh -> Implementer (--affected) -> Tester -> Reviewer -> Merger (--full) -> worktree-down.sh`. |
 | **`/codebase-design`** | Словник та правила проектування глибоких модулів (Deep Modules, Seams, Locality, Deletion Test). |
 | **`/improve-architecture`** | Аудит кодової бази: знаходить горизонтальні шари та мілкі модулі і допомагає об'єднати їх у глибокі вертикальні модулі. |
 

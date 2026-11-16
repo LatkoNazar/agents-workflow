@@ -70,14 +70,15 @@ Cover these four decision branches (skip any question already answered by the us
 
 ❓ **Q4 — Focused Agent Roles, Models & Orchestration Mode**: Which specialized sub-agents and default execution pipeline should we configure in `.agents/workflow.json`?
 - **Core Roles:**
-  1. `explorer` (fast/cheap model for codebase search in isolated context)
-  2. `implementer` (vertical-slice builder: DB -> Deep Module Facade -> Contract -> UI + strict TDD)
-  3. `reviewer` (fresh context, stronger model, pushed coding & architecture standards)
-  4. `merger` (merges worktree branch, resolves conflicts, runs final `verify.sh`, tears down Docker sandbox)
-  5. *(Optional domain-specific agents based on repo)*
+  1. `explorer` (fast/cheap model for codebase reconnaissance; returns 100% contracts/paths and 0% internal code bodies)
+  2. `implementer` (vertical-slice builder: DB -> Deep Module Facade -> Contract -> UI + strict TDD with fast `verify.sh --affected`)
+  3. `tester` (smart verification & log-shield sub-agent: picks test blast radius from `git diff`, absorbs raw logs, returns concise diagnosis)
+  4. `reviewer` (fresh context, stronger model, pushed coding & architecture standards)
+  5. `merger` (merges worktree branch, resolves conflicts, runs final `verify.sh --full`, tears down Docker sandbox)
+  6. *(Optional domain-specific agents based on repo)*
 - **Orchestration Mode:** `single-ticket`, `sequential-with-review`, or `parallel-dag-with-review`
 
-➡️ Recommended: Configure the 4 core roles (+ <any project-specific role>), route `implementer` to <Sonnet/default> and `reviewer` to <Opus/top reasoning model>, with `parallel-dag-with-review` as the default mode.
+➡️ Recommended: Configure the 5 core roles (+ <any project-specific role>), route `implementer`/`tester` to <Sonnet/default> and `reviewer` to <Opus/top reasoning model>, with `parallel-dag-with-review` as the default mode.
 ```
 
 Wait for the user's confirmation or adjustments before generating files.
@@ -90,6 +91,7 @@ Ensure the core workflow skills exist in `.agents/skills/` (and are linked into 
 - `init-agents`
 - `find-skills`
 - `grill-me`
+- `handoff`
 - `to-spec`
 - `to-tickets`
 - `tdd`
@@ -136,7 +138,7 @@ Using the templates in `./templates/` as your baseline, customize and write the 
    - Supports `single-ticket`, `sequential-with-review`, and `parallel-dag-with-review` across unblocked `AFK` tickets using the CLI commands and models configured in `.agents/workflow.json`.
 
 6. **Focused Sub-Agents in `.agents/agents/*.md`** (from `templates/agents/*.md`):
-   - Generate `explorer.md`, `implementer.md`, `reviewer.md`, `merger.md`, plus any agreed domain-specific sub-agents.
+   - Generate `explorer.md`, `implementer.md`, `tester.md`, `reviewer.md`, `merger.md`, plus any agreed domain-specific sub-agents.
    - Inject the project's exact coding standards, deep-module rules, and vertical-slice requirements directly into `reviewer.md` (**Push model**).
    - Symlink or copy `.agents/agents/*.md` into `.claude/agents/` so Claude Code, Antigravity, and other tools discover them natively.
 

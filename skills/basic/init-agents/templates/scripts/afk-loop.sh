@@ -3,11 +3,11 @@ set -euo pipefail
 
 # ==============================================================================
 # afk-loop.sh — Autonomous Worktree + Dev-Sandbox Orchestrator ("Night Shift")
-# Supports orchestration modes from .agents/workflow.json:
-#   - single-ticket: Execute one specific ticket end-to-end
-#   - sequential-with-review: Pick unblocked AFK tickets one by one
-#   - parallel-dag-with-review: Run up to N unblocked AFK tickets in parallel
-#     worktree sandboxes, review each in a fresh context, and merge sequentially.
+# Pipeline per ticket (every step in a 100% fresh <100k Smart Zone context):
+#   1. Implementer (TDD + fast verify.sh --affected)
+#   2. Tester Sub-Agent (Smart blast-radius test selector & log shield)
+#   3. Reviewer Sub-Agent (Two-axis clean-context diff review)
+#   4. Merger Sub-Agent (Merge + verify.sh --full + destroy sandbox)
 # ==============================================================================
 
 REPO_ROOT="$(git rev-parse --show-toplevel)"
@@ -21,9 +21,12 @@ if [[ -f "$WORKFLOW_JSON" ]] && command -v jq >/dev/null 2>&1; then
   DEFAULT_MODE="$(jq -r '.orchestration.defaultTemplate // "sequential-with-review"' "$WORKFLOW_JSON")"
   MAX_PARALLEL="$(jq -r '.orchestration.maxParallelWorktrees // 3' "$WORKFLOW_JSON")"
   MAX_RETRIES="$(jq -r '.orchestration.maxReviewIterations // 3' "$WORKFLOW_JSON")"
+  SMART_ZONE_LIMIT="$(jq -r '.orchestration.smartZoneLimitTokens // 100000' "$WORKFLOW_JSON")"
   BASE_BRANCH="$(jq -r '.project.defaultBranch // "main"' "$WORKFLOW_JSON")"
   IMPL_PROVIDER="$(jq -r '.orchestration.roles.implementer.provider // "claude"' "$WORKFLOW_JSON")"
   IMPL_MODEL="$(jq -r '.orchestration.roles.implementer.model // "claude-sonnet-4-6"' "$WORKFLOW_JSON")"
+  TEST_PROVIDER="$(jq -r '.orchestration.roles.tester.provider // "claude"' "$WORKFLOW_JSON")"
+  TEST_MODEL="$(jq -r '.orchestration.roles.tester.model // "claude-sonnet-4-6"' "$WORKFLOW_JSON")"
   REV_PROVIDER="$(jq -r '.orchestration.roles.reviewer.provider // "claude"' "$WORKFLOW_JSON")"
   REV_MODEL="$(jq -r '.orchestration.roles.reviewer.model // "claude-opus-4-6"' "$WORKFLOW_JSON")"
   MERGE_PROVIDER="$(jq -r '.orchestration.roles.merger.provider // "claude"' "$WORKFLOW_JSON")"
@@ -32,9 +35,12 @@ else
   DEFAULT_MODE="sequential-with-review"
   MAX_PARALLEL=3
   MAX_RETRIES=3
+  SMART_ZONE_LIMIT=100000
   BASE_BRANCH="main"
   IMPL_PROVIDER="claude"
   IMPL_MODEL="claude-sonnet-4-6"
+  TEST_PROVIDER="claude"
+  TEST_MODEL="claude-sonnet-4-6"
   REV_PROVIDER="claude"
   REV_MODEL="claude-opus-4-6"
   MERGE_PROVIDER="claude"
@@ -46,17 +52,39 @@ if [[ -n "$TARGET_TICKET" && "$TARGET_TICKET" != "--all" ]]; then
   MODE="single-ticket"
 fi
 
-# Helper: Run an agent CLI in a fresh context window inside a target directory
+# Helper: Run an agent CLI in a fresh context window and report Smart Zone token usage
 run_agent_in_dir() {
   local workdir="$1"
   local provider="$2"
   local model="$3"
   local prompt="$4"
+  local role_label="${5:-agent}"
 
   (
     cd "$workdir"
     case "$provider" in
       claude)
+        if command -v jq >/dev/null 2>&1; then
+          local json_out
+          json_out="$(claude -p "$prompt" --model "$model" --output-format json --dangerously-skip-permissions 2>/dev/null || true)"
+          if [[ -n "$json_out" ]] && echo "$json_out" | jq -e . >/dev/null 2>&1; then
+            local result_text input_tok cache_read cache_create total_ctx used_k limit_k
+            result_text="$(echo "$json_out" | jq -r '.result // empty')"
+            input_tok="$(echo "$json_out" | jq -r '.usage.input_tokens // 0')"
+            cache_read="$(echo "$json_out" | jq -r '.usage.cache_read_input_tokens // 0')"
+            cache_create="$(echo "$json_out" | jq -r '.usage.cache_creation_input_tokens // 0')"
+            total_ctx=$((input_tok + cache_read + cache_create))
+            used_k=$(( (total_ctx + 999) / 1000 ))
+            limit_k=$(( SMART_ZONE_LIMIT / 1000 ))
+            if [[ $total_ctx -gt $SMART_ZONE_LIMIT ]]; then
+              echo "⚠️  [$role_label] Context window: ${used_k}k / ${limit_k}k (EXCEEDED SMART ZONE — slice tickets smaller!)" >&2
+            else
+              echo "🧠 [$role_label] Context window: ${used_k}k / ${limit_k}k (Smart Zone)" >&2
+            fi
+            echo "$result_text"
+            return 0
+          fi
+        fi
         claude -p "$prompt" --model "$model" --dangerously-skip-permissions
         ;;
       codex)
@@ -72,7 +100,7 @@ run_agent_in_dir() {
   )
 }
 
-# Helper: Check if a local markdown ticket is unblocked and ready for AFK execution
+# Helper: Find unblocked AFK tickets from .agents/tickets/
 find_unblocked_afk_tickets() {
   if [[ ! -d "$TICKETS_DIR" ]]; then
     return 0
@@ -111,7 +139,7 @@ find_unblocked_afk_tickets() {
   done
 }
 
-# Execute Implementer + Reviewer loop inside an isolated worktree sandbox
+# Execute Implementer -> Tester -> Reviewer loop inside an isolated worktree sandbox
 execute_ticket_in_worktree() {
   local ticket_id="$1"
   local ticket_file="$TICKETS_DIR/${ticket_id}.md"
@@ -129,35 +157,55 @@ execute_ticket_in_worktree() {
   "$REPO_ROOT/.agents/scripts/worktree-up.sh" "$ticket_id" "$BASE_BRANCH"
 
   local attempt=1
-  local review_feedback=""
+  local feedback=""
   local approved=false
 
   while [[ $attempt -le $MAX_RETRIES ]]; do
-    echo "--> [$ticket_id] Implementation Attempt $attempt/$MAX_RETRIES ($IMPL_PROVIDER / $IMPL_MODEL)..."
+    echo "--> [$ticket_id] Attempt $attempt/$MAX_RETRIES: Implementer ($IMPL_PROVIDER / $IMPL_MODEL)..."
+
+    local recent_commits
+    recent_commits="$(cd "$wt_dir" && git log -n 5 --oneline 2>/dev/null || true)"
 
     local impl_prompt
     impl_prompt="$(cat <<EOF
-You are the Implementer Agent working in an isolated worktree with a cloned Docker dev sandbox.
+You are the Implementer Agent working in a fresh <100k Smart Zone context inside an isolated worktree with a cloned Docker dev sandbox.
 Read .agents/agents/implementer.md and GLOSSARY.md.
+
+Recent 5 Commits:
+$recent_commits
+
 Ticket ID: $ticket_id
 Ticket Spec:
 $(cat "$ticket_file" 2>/dev/null || echo "See tracker for $ticket_id")
 
-${review_feedback:+Previous Code Review Feedback to address:
-$review_feedback}
+${feedback:+Feedback from previous Tester/Reviewer run to fix:
+$feedback}
 
 Instructions:
 1. Build the complete VERTICAL SLICE required by this ticket (DB/State -> Deep Module Facade -> Contract Sync -> Frontend/UI).
 2. Follow strict TDD (/tdd): write a failing integration test against the public module facade first, then implement.
-3. Run ./.agents/scripts/verify.sh until it passes 100%.
+3. Use fast ./.agents/scripts/verify.sh --affected during coding iterations so you only run tests for affected modules.
 4. Commit your changes to the current branch (feat/$ticket_id).
 EOF
 )"
-    run_agent_in_dir "$wt_dir" "$IMPL_PROVIDER" "$IMPL_MODEL" "$impl_prompt"
+    run_agent_in_dir "$wt_dir" "$IMPL_PROVIDER" "$IMPL_MODEL" "$impl_prompt" "implementer"
 
-    # Verify feedback loop deterministically before calling Reviewer
-    if ! (cd "$wt_dir" && ./.agents/scripts/verify.sh); then
-      review_feedback="verify.sh failed. Fix all test, contract, and typecheck errors."
+    echo "--> [$ticket_id] Running Smart Tester Sub-Agent ($TEST_PROVIDER / $TEST_MODEL)..."
+    local test_prompt
+    test_prompt="$(cat <<EOF
+You are the Tester Sub-Agent running in a fresh context window.
+Read .agents/agents/tester.md.
+Inspect git diff ${BASE_BRANCH}...HEAD, select and run the appropriate verification tier (./.agents/scripts/verify.sh --affected, plus any affected neighboring module tests or E2E smoke tests), absorb all raw logs, and output either:
+- TEST_VERDICT: PASSED
+- TEST_VERDICT: FAILED (followed by a concise 5-10 line root-cause diagnosis).
+EOF
+)"
+    local test_output
+    test_output="$(run_agent_in_dir "$wt_dir" "$TEST_PROVIDER" "$TEST_MODEL" "$test_prompt" "tester" || true)"
+    echo "$test_output"
+
+    if ! echo "$test_output" | grep -q "TEST_VERDICT: PASSED"; then
+      feedback="$test_output"
       attempt=$((attempt + 1))
       continue
     fi
@@ -180,20 +228,20 @@ Otherwise, output REVIEW_DECISION: CHANGES_REQUESTED followed by concise, action
 EOF
 )"
     local review_output
-    review_output="$(run_agent_in_dir "$wt_dir" "$REV_PROVIDER" "$REV_MODEL" "$rev_prompt" || true)"
+    review_output="$(run_agent_in_dir "$wt_dir" "$REV_PROVIDER" "$REV_MODEL" "$rev_prompt" "reviewer" || true)"
     echo "$review_output"
 
     if echo "$review_output" | grep -q "REVIEW_DECISION: APPROVED"; then
       approved=true
       break
     else
-      review_feedback="$review_output"
+      feedback="$review_output"
       attempt=$((attempt + 1))
     fi
   done
 
   if [[ "$approved" != "true" ]]; then
-    echo "❌ [$ticket_id] Failed to pass review after $MAX_RETRIES attempts. Leaving worktree intact for human inspection." >&2
+    echo "❌ [$ticket_id] Failed to pass Tester/Reviewer after $MAX_RETRIES attempts. Leaving worktree intact for human inspection." >&2
     return 1
   fi
 
@@ -210,10 +258,10 @@ merge_and_teardown_ticket() {
   local merge_prompt
   merge_prompt="$(cat <<EOF
 You are the Merger Agent (see .agents/agents/merger.md).
-Merge branch '$branch_name' into '$BASE_BRANCH', resolve any conflicts cleanly while preserving both vertical slices, and run ./.agents/scripts/verify.sh to confirm the integrated branch is green.
+Merge branch '$branch_name' into '$BASE_BRANCH', resolve any conflicts cleanly while preserving both vertical slices, and run ./.agents/scripts/verify.sh --full to confirm the integrated branch is green.
 EOF
 )"
-  run_agent_in_dir "$REPO_ROOT" "$MERGE_PROVIDER" "$MERGE_MODEL" "$merge_prompt"
+  run_agent_in_dir "$REPO_ROOT" "$MERGE_PROVIDER" "$MERGE_MODEL" "$merge_prompt" "merger"
 
   if [[ -f "$ticket_file" ]]; then
     sed -i -E 's/^status:\s*.*/status: done/' "$ticket_file" || true
