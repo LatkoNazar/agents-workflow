@@ -9,40 +9,95 @@ set -euo pipefail
 # ==============================================================================
 
 INPUT_JSON="$(cat || true)"
-if [[ -z "$INPUT_JSON" ]] || ! command -v jq >/dev/null 2>&1; then
+if [[ -z "$INPUT_JSON" ]]; then
   exit 0
 fi
 
-CMD="$(echo "$INPUT_JSON" | jq -r '.tool_input.command // empty' 2>/dev/null || true)"
+extract_cmd() {
+  if command -v jq >/dev/null 2>&1; then
+    echo "$INPUT_JSON" | jq -r '.tool_input.command // .command // .input.command // .tool_input.CommandLine // .CommandLine // empty' 2>/dev/null || true
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 -c '
+import sys, json
+try:
+    d = json.loads(sys.stdin.read())
+    ti = d.get("tool_input") or {}
+    inp = d.get("input") or {}
+    cmd = ti.get("command") or ti.get("CommandLine") or d.get("command") or d.get("CommandLine") or inp.get("command") or ""
+    print(cmd)
+except Exception:
+    pass
+' <<< "$INPUT_JSON" 2>/dev/null || true
+  else
+    # Simple regex fallback if neither jq nor python3 is installed
+    echo "$INPUT_JSON" | grep -oE '"(command|CommandLine)"\s*:\s*"[^"]+"' | head -n 1 | sed -E 's/.*:\s*"([^"]+)".*/\1/' || true
+  fi
+}
+
+CMD="$(extract_cmd)"
 if [[ -z "$CMD" ]]; then
   exit 0
 fi
 
 deny_command() {
   local reason="$1"
-  jq -cn --arg reason "$reason" '{
-    decision: "deny",
-    reason: $reason,
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: "deny",
-      permissionDecisionReason: $reason
+  if command -v jq >/dev/null 2>&1; then
+    jq -cn --arg reason "$reason" '{
+      decision: "deny",
+      reason: $reason,
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "deny",
+        permissionDecisionReason: $reason
+      }
+    }'
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 -c '
+import sys, json
+reason = sys.argv[1]
+print(json.dumps({
+    "decision": "deny",
+    "reason": reason,
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "deny",
+        "permissionDecisionReason": reason
     }
-  }'
+}))' "$reason"
+  else
+    echo "{\"decision\":\"deny\",\"reason\":\"$reason\"}"
+  fi
   exit 0
 }
 
 ask_command() {
   local reason="$1"
-  jq -cn --arg reason "$reason" '{
-    decision: "ask",
-    reason: $reason,
-    hookSpecificOutput: {
-      hookEventName: "PreToolUse",
-      permissionDecision: "ask",
-      permissionDecisionReason: $reason
+  if command -v jq >/dev/null 2>&1; then
+    jq -cn --arg reason "$reason" '{
+      decision: "ask",
+      reason: $reason,
+      hookSpecificOutput: {
+        hookEventName: "PreToolUse",
+        permissionDecision: "ask",
+        permissionDecisionReason: $reason
+      }
+    }'
+  elif command -v python3 >/dev/null 2>&1; then
+    python3 -c '
+import sys, json
+reason = sys.argv[1]
+print(json.dumps({
+    "decision": "ask",
+    "reason": reason,
+    "hookSpecificOutput": {
+        "hookEventName": "PreToolUse",
+        "permissionDecision": "ask",
+        "permissionDecisionReason": reason
     }
-  }'
+}))' "$reason"
+  else
+    echo "{\"decision\":\"ask\",\"reason\":\"$reason\"}"
+  fi
   exit 0
 }
 

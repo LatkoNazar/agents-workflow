@@ -73,12 +73,18 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
 ├── agents/
 │   ├── explorer.md            # Швидкий субагент розвідки коду
 │   ├── implementer.md         # Будівник вертикальних зрізів за суворим TDD
+│   ├── tester.md              # Субагент верифікації (екранує логи, визначає blast radius)
 │   ├── reviewer.md            # Рев'юер у чистому контексті із зашитими правилами проекту
 │   └── merger.md              # Інтегратор гілок та очищувач сандбоксів
 ├── scripts/
 │   ├── worktree-up.sh         # Git worktree + повний клон Postgres, Mongo, Redis, Volumes, профілів
 │   ├── worktree-down.sh       # Знесення клонованого сандбоксу + видалення worktree
 │   ├── verify.sh              # Єдиний контур: Boundary check -> Backend tests -> Contract sync -> Frontend tsc/tests
+│   ├── lint-ui.sh             # Опціональний детермінований UI-лінтер токенів та анти-слопу
+│   ├── ui-ref.py              # Накладання координатної сітки 0..100% та кропінг кластерів
+│   ├── setup-hooks.sh         # Автоналаштування хуків для Claude Code, Codex, Gemini, Cursor
+│   ├── hook-pre-bash.sh       # PreToolUse: блокування деструктивних дій та ask на git push
+│   ├── hook-stop-verify.sh    # Stop-гейт: автоперевірка verify.sh --affected перед завершенням
 │   └── afk-loop.sh            # Автономний термінальний ранер (single / sequential / parallel DAG)
 ├── specs/                     # PRD документи (при local Kanban)
 └── tickets/                   # Вертикальні тікети з blocked_by (при local Kanban)
@@ -104,3 +110,33 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
   # Усі незаблоковані AFK-тікети (у режимі sequential-with-review або parallel-dag-with-review):
   ./.agents/scripts/afk-loop.sh --all
   ```
+
+---
+
+## 4. Крос-агентні запобіжники та хуки
+
+Система автоматично підтримує роботу в **Claude Code**, **OpenAI Codex CLI**, **Gemini CLI / Antigravity** та **Cursor** без потреби дублювати файли налаштувань вручну.
+
+### Єдиний стандарт інструкцій: `AGENTS.md`
+- Усі сучасні кодинг-агенти підтримують стандарт `AGENTS.md` у корені репозиторію.
+- `CLAUDE.md` більше не потрібен як дублікат.
+- Файл `AGENTS.md` тримається **до 100 рядків** для збереження сесії в межах **Smart Zone (<100k токенів)**.
+
+### Нативні запобіжники (`setup-hooks.sh`)
+При виконанні `/init-agents` або при кожному виклику `verify.sh`, скрипт `setup-hooks.sh` автоматично перевіряє та підключає конфігурації для всіх 4 середовищ одночасно:
+- `.claude/settings.json` (Claude Code)
+- `.codex/hooks.json` (Codex CLI)
+- `.gemini/settings.json` (Gemini CLI / Antigravity)
+- `.cursor/hooks.json` (Cursor)
+
+#### Що контролюють хуки:
+1. **Жорстке блокування (`deny`):**
+   - `git push --force` / `-f` / `--force-with-lease`
+   - `git reset --hard`
+   - `git clean -f`
+   - Спроба застейджити секрети: `git add .env*` (дозволено лише `.env.example`/`.template`)
+   - `rm -rf` за межами поточної робочої директорії
+2. **Контроль людини на звичайний пуш (`ask`):**
+   - На будь-яку спробу `git push` агент обов'язково запитує підтвердження користувача, тому ви завжди особисто контролюєте, що і коли летить у віддалений репозиторій.
+3. **Stop-гейт («Турнікет на виході»):**
+   - Перед завершенням ходу агента хук автоматично запускає `./.agents/scripts/verify.sh --affected`. Якщо агент змінив код і зламав тести або тайпчек, хід блокується з виведенням помилки, спонукаючи агента негайно виправити регресію.

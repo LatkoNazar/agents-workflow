@@ -83,6 +83,29 @@ ensure_agent_hook_file() {
       echo "$merged" > "$file_path"
       echo "✅ [$agent_name] Merged hooks into existing $2"
       return 0
+    elif command -v python3 >/dev/null 2>&1; then
+      python3 -c '
+import sys, json
+def deep_merge(dict1, dict2):
+    for k, v in dict2.items():
+        if isinstance(v, dict) and k in dict1 and isinstance(dict1[k], dict):
+            deep_merge(dict1[k], v)
+        else:
+            dict1[k] = v
+    return dict1
+fpath, payload_str = sys.argv[1], sys.argv[2]
+try:
+    with open(fpath, "r") as f:
+        data = json.load(f)
+except Exception:
+    data = {}
+p = json.loads(payload_str)
+deep_merge(data, p)
+with open(fpath, "w") as f:
+    json.dump(data, f, indent=2)
+' "$file_path" "$payload"
+      echo "✅ [$agent_name] Merged hooks into existing $2"
+      return 0
     fi
   fi
 
