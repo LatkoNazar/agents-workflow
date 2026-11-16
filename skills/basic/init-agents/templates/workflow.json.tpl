@@ -40,6 +40,11 @@
       "enabled": true,
       "schemaPath": "contracts/openapi.json",
       "syncCommand": "./.agents/scripts/verify.sh --contracts-only"
+    },
+    "uiLinter": {
+      "enabled": true,
+      "styleSystem": "tailwind-cva",
+      "command": "./.agents/scripts/lint-ui.sh"
     }
   },
   "sandbox": {

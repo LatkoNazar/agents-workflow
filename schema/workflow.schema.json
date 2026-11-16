@@ -58,6 +58,14 @@
             "schemaPath": { "type": "string" },
             "syncCommand": { "type": "string" }
           }
+        },
+        "uiLinter": {
+          "type": "object",
+          "properties": {
+            "enabled": { "type": "boolean", "default": true },
+            "styleSystem": { "type": "string" },
+            "command": { "type": "string", "default": "./.agents/scripts/lint-ui.sh" }
+          }
         }
       }
     },

@@ -110,7 +110,23 @@ Reject these common AI visual clichés whenever they appear as unmotivated defau
 
 ---
 
-## 4. Mandatory Delivery Gate (Check Before Completing Task or Review)
+## 4. Deterministic UI Token & Anti-Slop Linter (`lint-ui.sh` — Opt-In)
+
+To enforce design tokens and anti-slop rules deterministically at **0 prompt token cost**:
+
+1. **Check `.agents/workflow.json` (`architecture.uiLinter.enabled`):**
+   - If `architecture.uiLinter.enabled` is explicitly `false`, **respect the user's choice**: do NOT run or suggest CSS/token linting.
+   - If `.agents/scripts/lint-ui.sh` exists and is enabled, run `./.agents/scripts/lint-ui.sh` before completing any frontend task.
+2. **If `.agents/scripts/lint-ui.sh` Does Not Exist Yet (and `uiLinter.enabled` is not `false`):**
+   - **Propose creating it to the user and state the concrete benefits:**
+     - **Saves context window tokens:** Validates semantic design tokens, UI kit primitives (`components/ui/*`), and anti-slop rules in 0.1s via script instead of loading a large `DESIGN.md` into the LLM prompt.
+     - **Prevents hardcoded style drift:** Automatically catches hardcoded `#hex`/`rgb()` colors, inline `style={{}}`, arbitrary `[...]` values, dead `href="#"` controls, and hardcoded mock arrays in `features/*`.
+   - **If the user accepts:** Detect the project's styling setup (Tailwind + CVA, CSS Modules, SCSS, etc.), generate `.agents/scripts/lint-ui.sh` tailored to that stack, and set `"uiLinter": { "enabled": true }` in `.agents/workflow.json`.
+   - **If the user declines:** Set `"uiLinter": { "enabled": false }` in `.agents/workflow.json` so future runs never nag or run CSS linting.
+
+---
+
+## 5. Mandatory Delivery Gate (Check Before Completing Task or Review)
 
 Before finishing any UI or code task, verify all items pass:
 

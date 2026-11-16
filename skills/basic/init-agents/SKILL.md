@@ -61,10 +61,15 @@ Cover these four decision branches (skip any question already answered by the us
 
 ---
 
-❓ **Q3 — Vertical Modules & Contract Bridge**: How should we enforce vertical slices and deep module boundaries in this codebase?
-(Detected structure: <vertical/horizontal>, languages: <stack>)
+❓ **Q3 — Vertical Modules, Contract Bridge & UI Token Linter (`lint-ui.sh`)**:
+1. **Vertical Modules & Contracts:** How should we enforce vertical slices (`modules/<domain>/facade.*` + `features/<domain>/index.*`) and automatic Backend <-> Frontend contract sync?
+2. **Optional UI Design-Token & Anti-Slop Linter (`lint-ui.sh`):** Should we generate a deterministic UI linter tailored to this project's styling stack (`<detected: Tailwind/CVA, CSS Modules, SCSS, etc.>`)?
+   - **Why it helps (Benefits):**
+     - **0 prompt tokens wasted:** Enforces your design tokens, UI primitives (`components/ui/*`), and anti-slop rules deterministically in 0.1s during `verify.sh` instead of bloating prompts with a huge `DESIGN.md`.
+     - **Blocks style chaos in `features/*`:** Prevents agents from hardcoding `#hex`/`rgb()` colors, inline `style={{}}`, arbitrary `[...]` values, dead `href="#"` links, or mock arrays in UI components.
+   - *(If you decline, we will set `architecture.uiLinter.enabled: false` in `workflow.json` and skip CSS/token linting completely.)*
 
-➡️ Recommended: <Define the target vertical module path e.g. `backend/src/modules/<domain>/facade.*` + `frontend/src/features/<domain>/index.*`, plus automatic contract sync in `verify.sh` if multi-language>.
+➡️ Recommended: <Define target vertical module paths + enable `lint-ui.sh` tailored to the detected CSS/token setup>.
 
 ---
 
