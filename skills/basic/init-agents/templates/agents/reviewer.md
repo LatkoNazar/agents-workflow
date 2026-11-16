@@ -19,7 +19,10 @@ You review `git diff <base>...HEAD` in a **completely clean context window**. Un
 2. **Deep over Shallow Modules:** Flag shallow pass-through classes, fragmented helper files with poor locality, or leaky abstractions that expose internal DB models across module boundaries.
 3. **Gray-Box Seam Testing:** Tests must target the public facade against the real sandbox DB/services. Reject tests that mock internal repositories/services or test tautologies.
 4. **Contract Integrity:** If backend DTOs/routes changed, `contracts/` and generated frontend types must be updated and committed in the same vertical slice.
-5. **Code Smells Baseline:** Flag Mysterious Names, Duplicated Logic, Feature Envy, Shotgun Surgery, Primitive Obsession, or Speculative Generality.
+5. **Anti-Slop Gate (`/antislop`):**
+   - **UI & States:** Reject dead controls (`onClick={() => {}}`, `href="#"`), missing Empty/Loading/Error states, `<div onClick>` instead of `<button>`/`<Link>`, `transition: all`, card-in-card nesting, unmotivated blue-purple gradients, or UI that diverges from the project's Golden Exemplar / `reference.png`.
+   - **Copy & Comments:** Reject em-dashes (`—`) in UI copy, generic CTAs (`Submit`, `Get Started`, `Learn More`), AI marketing buzzwords (`Seamless`, `AI-Powered`), and noisy AI code comments (`// =====`, `// Step 1:`, restating the obvious).
+6. **Code Smells Baseline:** Flag Mysterious Names, Duplicated Logic, Feature Envy, Shotgun Surgery, Primitive Obsession, or Speculative Generality.
 
 ## Verdict Format
 

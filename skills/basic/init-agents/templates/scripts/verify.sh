@@ -86,15 +86,20 @@ elif [[ "$MODE" == "affected" && -n "$CHANGED_FILES" ]]; then
   done < <(echo "$CHANGED_FILES" | grep -oE '^(frontend/)?src/features/[^/]+' | sort -u || true)
 fi
 
-# 1. Deep Module Boundary Check
+# 1. Deep Module Boundary & Deterministic Anti-Slop Check
 check_boundaries() {
   if git grep -nE '(from|import).*modules/[^/]+/internal' -- ':!*.agents/*' 2>/dev/null; then
     echo "Direct import from a module's internal/ directory detected! Import only from its public facade."
     return 1
   fi
+  # Deterministic Anti-Slop check on frontend files (no dead href="#", no transition-all)
+  if git grep -nE '(href="#"|onClick=\{\(\)\s*=>\s*\{\s*\}\}|transition-all)' -- '*.tsx' '*.jsx' ':!*.test.*' 2>/dev/null; then
+    echo "Anti-Slop Violation: Dead control (href='#' or empty onClick) or 'transition-all' detected in UI code!"
+    return 1
+  fi
   return 0
 }
-run_step "[1/4] Deep Module boundary check" check_boundaries
+run_step "[1/4] Deep Module boundary & Anti-Slop check" check_boundaries
 
 # 2. Backend Tests (Affected module vs Full)
 if [[ "$MODE" != "contracts-only" ]]; then
