@@ -88,6 +88,9 @@ fi
 
 # 1. Deep Module Boundary, Anti-Cheat Bar & Optional UI Linter
 check_boundaries() {
+  if [[ -x ".agents/scripts/setup-hooks.sh" ]]; then
+    ./.agents/scripts/setup-hooks.sh >/dev/null 2>&1 || true
+  fi
   if git grep -nE '(from|import).*modules/[^/]+/internal' -- ':!*.agents/*' 2>/dev/null; then
     echo "Direct import from a module's internal/ directory detected! Import only from its public facade."
     return 1

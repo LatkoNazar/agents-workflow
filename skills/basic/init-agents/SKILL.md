@@ -153,7 +153,7 @@ Using the templates in `./templates/` as your baseline, customize and write the 
 
 7. **Agent Hooks Auto-Setup (`setup-hooks.sh`) & Chrome DevTools MCP (`.mcp.json`)**:
    - Copy `hook-pre-bash.sh`, `hook-stop-verify.sh`, and `setup-hooks.sh` from `templates/scripts/` into `.agents/scripts/` (`chmod +x`).
-   - Run `./.agents/scripts/setup-hooks.sh`: it checks if native agent hooks exist for **Claude Code / Antigravity** (`.claude/settings.json`), **Codex CLI** (`.codex/hooks.json`), and **Cursor** (`.cursor/hooks.json`), and creates/merges them automatically if missing:
+   - Run `./.agents/scripts/setup-hooks.sh`: it checks if native agent hooks exist for **Claude Code** (`.claude/settings.json`), **Codex CLI** (`.codex/hooks.json`), **Gemini CLI** (`.gemini/settings.json`), and **Cursor** (`.cursor/hooks.json`), and creates/merges all 4 simultaneously if missing:
      - **`PreToolUse` (`hook-pre-bash.sh`):** Hard-blocks (`deny`) destructive commands (`git push --force`, `git reset --hard`, `git clean -f`, `git add .env`, `rm -rf ..`) and prompts the user (`ask`) before any normal `git push` so you always control remote pushes.
      - **`Stop` (`hook-stop-verify.sh`):** Automatically runs `./.agents/scripts/verify.sh --affected` when code was modified before allowing the agent to finish its turn.
    - If the project has a frontend and `browserMcp.enabled == true`, create or merge `chrome-devtools` (`npx -y chrome-devtools-mcp@latest --headless --isolated`) into `.mcp.json` at the repo root.

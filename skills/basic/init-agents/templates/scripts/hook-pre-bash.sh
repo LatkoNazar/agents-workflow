@@ -21,6 +21,8 @@ fi
 deny_command() {
   local reason="$1"
   jq -cn --arg reason "$reason" '{
+    decision: "deny",
+    reason: $reason,
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       permissionDecision: "deny",
@@ -33,6 +35,8 @@ deny_command() {
 ask_command() {
   local reason="$1"
   jq -cn --arg reason "$reason" '{
+    decision: "ask",
+    reason: $reason,
     hookSpecificOutput: {
       hookEventName: "PreToolUse",
       permissionDecision: "ask",
