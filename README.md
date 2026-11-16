@@ -31,7 +31,7 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 
 1. **Узгодження деталей та архітектури (без галюцинацій):**
    ```text
-   /grill-me Хочу додати систему підписок через Stripe
+   /grill-me I want to add Stripe subscription billing
    ```
    *Агент опитає тебе раундами по 1–2 питання з варіантами рішень, доки всі крайові випадки не будуть узгоджені.*
 
@@ -45,7 +45,7 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
    ```text
    /to-tickets
    ```
-   *Ділить задачу не горизонтальними шарами, а наскрізними вертикальними зрізами (`БД -> Фасад -> Контракт -> UI -> Інтеграційний тест`) із графом залежностей.*
+   *Ділить задачу не горизонтальними шарами, а наскрізними вертикальними зрізами (`DB -> Facade -> Contract -> UI -> Integration Test`) із графом залежностей.*
 
 4. **Реалізація у захищеному сандбоксі:**
    ```text
@@ -59,34 +59,34 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 
 ## 2. Каталог скілів (`basic` та `addons`)
 
-При вводі `/` у будь-якому агенті (Codex, Claude Code, Cursor, Antigravity) відображаються чіткі підписи дії та підказки аргументів:
+При вводі `/` у будь-якому агенті (Codex, Claude Code, Cursor, Antigravity) відображаються чіткі англомовні підписи дії та підказки аргументів:
 
 ### Ядро (`skills/basic/`) — обов'язковий базовий пайплайн
 | Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
 | :--- | :--- | :--- |
 | **`/init-agents`** | `Scaffold .agents/ workflow: setup Docker sandboxes, worktrees, multi-agent hooks, sub-agents, and AGENTS.md` | Первинне сканування проекту, опитування `grill-me` та генерація всієї агентської інфраструктури. |
-| **`/grill-me [ідея]`** | `Interview me on requirements & architecture before coding (1-2 questions per round with recommendations)` | Узгодження архітектури та крайових випадків без галюцинацій. |
-| **`/to-spec [назва]`** | `Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams` | Зведення відповідей у повноцінний PRD специфікації. |
+| **`/grill-me [idea]`** | `Interview me on requirements & architecture before coding (1-2 questions per round with recommendations)` | Узгодження архітектури та крайових випадків без галюцинацій. |
+| **`/to-spec [spec-name]`** | `Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams` | Зведення відповідей у повноцінний PRD специфікації. |
 | **`/to-tickets [spec.md]`**| `Decompose PRD into Vertical-Slice (Tracer Bullet) tickets with blocked_by DAG dependencies` | Нарізка наскрізних вертикальних тікетів (`DB -> Facade -> UI -> Test`). |
-| **`/implement <id>\|--all`**| `Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review` | Повний цикл реалізації в ізольованому worktree + сандбоксі. |
+| **`/implement <ticket-id>\|--all`**| `Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review` | Повний цикл реалізації в ізольованому worktree + сандбоксі. |
 | **`/tdd`** | `Enforce strict Red-Green-Refactor TDD on Deep Module facades against real cloned sandbox DB` | Суворий цикл TDD на фасадах проти реальної БД. |
-| **`/ddd [дизайн/диф]`** | `Doubt-Driven Development: fresh-context adversarial review to find concurrency & edge bugs` | Презумпція сумніву в чистому контексті для пошуку прихованих багів. |
-| **`/code-review [base]`** | `Two-axis clean-context code review: spec completeness + deep module architecture standards` | Незалежне рев'ю двома паралельними агентами. |
+| **`/ddd [claim/diff]`** | `Doubt-Driven Development: fresh-context adversarial review to find concurrency & edge bugs` | Презумпція сумніву в чистому контексті для пошуку прихованих багів. |
+| **`/code-review [base-ref]`** | `Two-axis clean-context code review: spec completeness + deep module architecture standards` | Незалежне рев'ю двома паралельними агентами. |
 | **`/antislop`** | `Anti-Slop Delivery Gate: blocks AI visual cliches, dead buttons, buzzwords & messy code` | Фільтр проти ШІ-шаблонів, пустих кнопок та сміттєвого коду. |
-| **`/ui-from-reference <img.png>`** | `Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents` | Перенесення UI піксель-в-піксель за сіткою та кластерами. |
-| **`/handoff [фокус]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
-| **`/find-skills <стек>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
+| **`/ui-from-reference <reference.png>`** | `Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents` | Перенесення UI піксель-в-піксель за сіткою та кластерами. |
+| **`/handoff [next-focus]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
+| **`/find-skills <stack-or-topic>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
 | **`/codebase-design`** | `Deep Module architecture rules: narrow public facades, hidden internals, seams & locality` | Архітектурний гайд по Deep Modules та Seams. |
-| **`/improve-architecture`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
+| **`/improve-architecture [module]`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
 
 ### Спеціалізовані розширення (`skills/addons/`)
 | Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
 | :--- | :--- | :--- |
 | **`/sync-contracts`** | `Sync backend & frontend contracts: generate TypeScript client & mocks from OpenAPI/Proto` | Автоматична генерація TS-клієнта та моків з OpenAPI/Proto. |
-| **`/diagnosing-bugs <помилка>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
-| **`/design-an-interface <модуль>`** | `Design It Twice: explore competing Deep Module facade interfaces before implementation` | Створення двох конкуруючих архітектур фасаду. |
-| **`/security-audit [ендпоінт]`** | `Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs` | Пошук вразливостей на межах довіри (OWASP/Cloudflare). |
-| **`/code-simplification [файл]`** | `Simplify green code: flatten nesting, remove boilerplate & guard early without breaking tests` | Спрощення та вирівнювання коду після зелених тестів. |
+| **`/diagnosing-bugs <bug-or-error>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
+| **`/design-an-interface <module-name>`** | `Design It Twice: explore competing Deep Module facade interfaces before implementation` | Створення двох конкуруючих архітектур фасаду. |
+| **`/security-audit [endpoint-or-pr]`** | `Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs` | Пошук вразливостей на межах довіри (OWASP/Cloudflare). |
+| **`/code-simplification [file-path]`** | `Simplify green code: flatten nesting, remove boilerplate & guard early without breaking tests` | Спрощення та вирівнювання коду після зелених тестів. |
 
 ---
 
@@ -101,7 +101,9 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 │   ├── implementer.md         # Будівник вертикальних зрізів за суворим TDD
 │   ├── tester.md              # Субагент верифікації (екранує логи, визначає blast radius)
 │   ├── reviewer.md            # Рев'юер у чистому контексті із зашитими правилами проекту
-│   └── merger.md              # Інтегратор гілок та очищувач сандбоксів
+│   ├── merger.md              # Інтегратор гілок та очищувач сандбоксів
+│   ├── security-auditor.md    # Спеціаліст безпеки (IDOR, Auth, ін'єкції, вебхуки, витік секретів)
+│   └── web-performance-auditor.md # Спеціаліст швидкодії (Core Web Vitals, Lighthouse, DevTools MCP)
 ├── scripts/
 │   ├── worktree-up.sh         # Git worktree + повний клон Postgres, Mongo, Redis, Volumes, профілів
 │   ├── worktree-down.sh       # Знесення клонованого сандбоксу + видалення worktree

@@ -136,6 +136,16 @@
         "provider": "claude",
         "model": "claude-sonnet-4-6",
         "agentFile": ".agents/agents/merger.md"
+      },
+      "securityAuditor": {
+        "provider": "claude",
+        "model": "claude-opus-4-6",
+        "agentFile": ".agents/agents/security-auditor.md"
+      },
+      "webPerformanceAuditor": {
+        "provider": "claude",
+        "model": "claude-sonnet-4-6",
+        "agentFile": ".agents/agents/web-performance-auditor.md"
       }
     }
   }

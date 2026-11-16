@@ -75,16 +75,17 @@ Cover these four decision branches (skip any question already answered by the us
 ---
 
 ❓ **Q4 — Focused Agent Roles, Models & Orchestration Mode**: Which specialized sub-agents and default execution pipeline should we configure in `.agents/workflow.json`?
-- **Core Roles:**
+- **Core Roles & Specialist Auditors:**
   1. `explorer` (fast/cheap model for codebase reconnaissance; returns 100% contracts/paths and 0% internal code bodies)
   2. `implementer` (vertical-slice builder: DB -> Deep Module Facade -> Contract -> UI + strict TDD with fast `verify.sh --affected`)
   3. `tester` (smart verification & log-shield sub-agent: picks test blast radius from `git diff`, absorbs raw logs, returns concise diagnosis)
   4. `reviewer` (fresh context, stronger model, pushed coding & architecture standards)
   5. `merger` (merges worktree branch, resolves conflicts, runs final `verify.sh --full`, tears down Docker sandbox)
-  6. *(Optional domain-specific agents based on repo)*
+  6. `security-auditor` (specialist security auditor: hunts for IDOR, Auth bypass, race conditions & leaks on sensitive changes)
+  7. `web-performance-auditor` (Core Web Vitals specialist: audits LCP, INP, CLS, Lighthouse & DevTools MCP traces)
 - **Orchestration Mode:** `single-ticket`, `sequential-with-review`, or `parallel-dag-with-review`
 
-➡️ Recommended: Configure the 5 core roles (+ <any project-specific role>), route `implementer`/`tester` to <Sonnet/default> and `reviewer` to <Opus/top reasoning model>, with `parallel-dag-with-review` as the default mode.
+➡️ Recommended: Configure the 5 core pipeline roles + 2 specialist auditors (`security-auditor` and `web-performance-auditor`), route `implementer`/`tester` to <Sonnet/default> and `reviewer`/`security-auditor` to <Opus/top reasoning model>, with `parallel-dag-with-review` as the default mode.
 ```
 
 Wait for the user's confirmation or adjustments before generating files.
@@ -147,7 +148,7 @@ Using the templates in `./templates/` as your baseline, customize and write the 
    - Supports `single-ticket`, `sequential-with-review`, and `parallel-dag-with-review` across unblocked `AFK` tickets using the CLI commands and models configured in `.agents/workflow.json`.
 
 6. **Focused Sub-Agents in `.agents/agents/*.md`** (from `templates/agents/*.md`):
-   - Generate `explorer.md`, `implementer.md`, `tester.md`, `reviewer.md`, `merger.md`, plus any agreed domain-specific sub-agents.
+   - Generate `explorer.md`, `implementer.md`, `tester.md`, `reviewer.md`, `merger.md`, `security-auditor.md`, `web-performance-auditor.md`, plus any agreed domain-specific sub-agents.
    - Inject the project's exact coding standards, deep-module rules, and vertical-slice requirements directly into `reviewer.md` (**Push model**).
    - Symlink or copy `.agents/agents/*.md` into `.claude/agents/` so Claude Code, Antigravity, and other tools discover them natively.
 
