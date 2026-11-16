@@ -1,6 +1,7 @@
 ---
 name: implement
-description: "Execute a ticket or DAG of tickets inside isolated Git worktrees with full Docker dev-state sandboxing, strict TDD, clean-context code review, and automated merging."
+description: "Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review."
+argument-hint: "<ticket-id> | --all"
 disable-model-invocation: true
 ---
 

@@ -1,6 +1,7 @@
 ---
 name: diagnosing-bugs
-description: "Reproduce, isolate, and fix bugs inside an isolated Git worktree backed by a full clone of the live dev database, Redis, Mongo, and user profiles."
+description: "Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB."
+argument-hint: "<bug description, failing test or error log>"
 disable-model-invocation: true
 ---
 

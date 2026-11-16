@@ -1,6 +1,7 @@
 ---
 name: code-simplification
-description: "Refactor working, green-tested code for maximum clarity and flat control flow while preserving 100% of external behavior, types, and test results."
+description: "Simplify green code: flatten nesting, remove boilerplate & guard early without breaking tests."
+argument-hint: "[target file or module]"
 disable-model-invocation: true
 ---
 

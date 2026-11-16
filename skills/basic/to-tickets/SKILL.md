@@ -1,6 +1,7 @@
 ---
 name: to-tickets
-description: "Break an approved PRD or conversation into a Kanban DAG of vertical tracer-bullet tickets with explicit blocked_by dependencies and AFK/HITL execution markers."
+description: "Decompose PRD into Vertical-Slice (Tracer Bullet) tickets with blocked_by DAG dependencies."
+argument-hint: "[path-to-spec.md]"
 disable-model-invocation: true
 ---
 

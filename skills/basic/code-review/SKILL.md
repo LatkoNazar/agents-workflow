@@ -1,6 +1,7 @@
 ---
 name: code-review
-description: "Two-axis clean-context code review: checks (1) Vertical Spec Completeness and (2) Pushed Project Standards & Deep Module Boundaries using isolated sub-agents."
+description: "Two-axis clean-context code review: spec completeness + deep module architecture standards."
+argument-hint: "[base-ref (default: main)]"
 ---
 
 # Independent Two-Axis Code Review (`/code-review`)

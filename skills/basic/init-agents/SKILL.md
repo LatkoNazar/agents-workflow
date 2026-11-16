@@ -1,6 +1,6 @@
 ---
 name: init-agents
-description: "Initialize the target repository for AI agent engineering: explore the stack, grill the user on project architecture, Kanban tracker, Docker dev-state sandboxing, and agent roles, then generate .agents/workflow.json, worktree sandbox scripts, universal git hooks, verify.sh, focused sub-agents, and a Smart-Zone AGENTS.md."
+description: "Scaffold .agents/ workflow: setup Docker sandboxes, worktrees, multi-agent hooks, sub-agents, and AGENTS.md."
 disable-model-invocation: true
 ---
 

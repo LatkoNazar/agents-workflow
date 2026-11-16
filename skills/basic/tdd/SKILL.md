@@ -1,6 +1,6 @@
 ---
 name: tdd
-description: "Strict Red-Green-Refactor Test-Driven Development at the Deep Module facade boundary against real cloned sandbox databases."
+description: "Enforce strict Red-Green-Refactor TDD on Deep Module facades against real cloned sandbox DB."
 ---
 
 # Strict Test-Driven Development (`/tdd`)

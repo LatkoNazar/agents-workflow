@@ -1,6 +1,6 @@
 ---
 name: antislop
-description: "Comprehensive Anti-Slop filter and Delivery Gate across UI, layout, copywriting, accessibility, reference matching, and code comments (synthesizing antislop.ai.id R-01..R-40, Anthropic frontend-design, and Vercel web-design-guidelines in one file)."
+description: "Anti-Slop Delivery Gate: blocks AI visual cliches, dead buttons, buzzwords & messy code."
 ---
 
 # Anti-Slop Filter & Delivery Gate (`/antislop`)

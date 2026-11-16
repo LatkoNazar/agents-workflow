@@ -1,6 +1,7 @@
 ---
 name: ddd
-description: "Doubt-Driven Development: complements TDD by subjecting non-trivial architectural decisions, state mutations, concurrency/idempotency assumptions, and finished vertical slices to a fresh-context adversarial cross-examination biased to disprove, not approve."
+description: "Doubt-Driven Development: fresh-context adversarial review to find concurrency & edge bugs."
+argument-hint: "[target claim, design or diff]"
 ---
 
 # Doubt-Driven Development (`/ddd`)

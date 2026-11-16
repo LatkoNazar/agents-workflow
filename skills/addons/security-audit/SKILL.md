@@ -1,6 +1,7 @@
 ---
 name: security-audit
-description: "Defensive security audit and hardening workflow (combining Cloudflare security-audit trust-boundary methodology and OWASP/STRIDE hardening): hunts for real auth/IDOR/injection/SSRFs/race vulnerabilities with concrete principal-resource proof and minimal fixes."
+description: "Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs."
+argument-hint: "[target endpoint, module or PR]"
 disable-model-invocation: true
 ---
 

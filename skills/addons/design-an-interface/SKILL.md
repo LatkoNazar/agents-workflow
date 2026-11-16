@@ -1,6 +1,7 @@
 ---
 name: design-an-interface
-description: "Apply John Ousterhout's 'Design It Twice' principle: spawn parallel sub-agents to propose radically different Deep Module facade interfaces before choosing the deepest, cleanest boundary."
+description: "Design It Twice: explore competing Deep Module facade interfaces before implementation."
+argument-hint: "<module or service to design>"
 disable-model-invocation: true
 ---
 

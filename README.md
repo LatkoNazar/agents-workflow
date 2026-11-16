@@ -1,77 +1,103 @@
 # `agents-workflow` — AI Engineering Skills & Worktree Dev-Sandbox System
 
-Універсальна система скілів та оркестрації агентів (натхненна воркфлоу **Matt Pocock** та **Sandcastle**), яка встановлюється в будь-який репозиторій через `npx skills add` і працює в **Claude Code, Codex, Antigravity та Cursor** через стандарт `.agents/`.
+Універсальна система скілів та оркестрації агентів (натхненна воркфлоу **Matt Pocock** та **Sandcastle**), яка встановлюється в будь-який репозиторій через `npx skills add` і працює в **Claude Code, Codex, Antigravity та Cursor** через єдиний стандарт `.agents/`.
 
 ---
 
-## Чому ця система працює
+## ⚡ Швидкий старт: Як цим користуватися
 
-1. **Smart Zone (<100k токенів):** Жодних роздутих системних промптів. Виконавець (`implementer`) підтягує скіли за моделлю **Pull**, а рев'юер (`reviewer`) отримує всі правила та стандарти проекту в чистому контексті за моделлю **Push**.
-2. **Vertical Slices (Tracer Bullets) замість горизонтальних шарів:** Заборонено робити задачі шарами («спочатку вся БД, потім весь бекенд, потім весь фронт»). Кожен тікет прошиває стек вертикально наскрізь (`DB/State -> Deep Module Facade -> Contract Sync -> Frontend Feature -> Seam Test`) і залишає проект на 100% зеленим після кожної ітерації.
-3. **Deep Modules & Gray-Box Testing:** Кожен бізнес-модуль має один вузький публічний фасад (`facade.py` / `facade.ts` / `index.ts`) і приховану реалізацію (`internal/`). Тести пишуться за суворим TDD виключно проти публічного фасаду та реальної клонованої БД (без моків внутрішніх класів чи репозиторіїв).
-4. **Git Worktree + Повний Docker-Сандбокс Dev-Оточення:** Агент живе на хості у Git worktree (`.worktrees/wt-<id>`), але під кожен worktree автоматично клонується **повна копія стану твоєї головної dev-апки** (Postgres, MongoDB, Redis, Docker volumes, локальні профілі, юзери, файли та `.env` зі зміщеними портами). Після мерджу весь сандбокс миттєво видаляється.
-
----
-
-## 1. Встановлення в проект
-
+### Крок 1. Встановити скіли у свій проект
+Відкрий термінал у корені твого проекту та виконай:
 ```bash
-# Встановити всі скіли з репозиторію у проект (.agents/skills/)
+# Встановити всі скіли з репозиторію
 npx skills add https://github.com/LatkoNazar/agents-workflow
 
-# Або встановити точково конкретні скіли:
+# Або встановити тільки базовий набір:
 npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
-npx skills add https://github.com/LatkoNazar/agents-workflow --skill find-skills
-npx skills add https://github.com/LatkoNazar/agents-workflow --skill grill-me
-npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
 ```
+
+### Крок 2. Перша ініціалізація (`/init-agents`)
+Відкрий чат будь-якого агента (**Claude Code, Codex CLI, Cursor, Antigravity**) та введи:
+```text
+/init-agents
+```
+Агент:
+1. Дослідить стек твого проекту (бекенд, фронтенд, БД, docker-compose).
+2. Задасть 4 короткі питання по `grill-me` (з готовими рекомендованими відповідями `➡️ Recommended`).
+3. Згенерує структуру `.agents/` зі скриптами Docker-клонування БД, worktree-сандбоксами та налаштує захисні хуки для всіх агентів.
+
+### Крок 3. Щоденна розробка фіч (покроковий цикл)
+Коли починаєш нову фічу, викликай скіли по черзі прямо в чаті:
+
+1. **Узгодження деталей та архітектури (без галюцинацій):**
+   ```text
+   /grill-me Хочу додати систему підписок через Stripe
+   ```
+   *Агент опитає тебе раундами по 1–2 питання з варіантами рішень, доки всі крайові випадки не будуть узгоджені.*
+
+2. **Генерація структурованої специфікації (PRD):**
+   ```text
+   /to-spec
+   ```
+   *Створює PRD: User Stories, публічні фасади модулів, API контракти, тестові шви та Out of Scope.*
+
+3. **Нарізка на вертикальні тікети (Tracer Bullets):**
+   ```text
+   /to-tickets
+   ```
+   *Ділить задачу не горизонтальними шарами, а наскрізними вертикальними зрізами (`БД -> Фасад -> Контракт -> UI -> Інтеграційний тест`) із графом залежностей.*
+
+4. **Реалізація у захищеному сандбоксі:**
+   ```text
+   /implement 001-stripe-webhook
+   # або для виконання всіх незаблокованих тікетів:
+   /implement --all
+   ```
+   *Агент підніме чистий Git worktree + клон твоєї dev-бази даних, напише код за суворим TDD, пройде рев'ю в чистому вікні, запустить `verify.sh` і зільє гілку.*
 
 ---
 
 ## 2. Каталог скілів (`basic` та `addons`)
 
-### Ядро (`skills/basic/`) — базовий пайплайн для кожного проекту
-| Скіл | Призначення |
-| :--- | :--- |
-| **`/init-agents`** | Сканує проект, опитує тебе по `grill-me`, налаштовує Kanban (`local` / `github` / `trello` / `linear`), генерує `.agents/workflow.json`, скрипти клонування Docker-сандбоксу (`worktree-up.sh`, `worktree-down.sh`, `verify.sh`, `afk-loop.sh`), фокусованих субагентів (`.agents/agents/*.md`) та лаконічний `AGENTS.md`/`CLAUDE.md`. |
-| **`/find-skills`** | Пошук та інсталяція зовнішніх скілів з екосистеми `npx skills` (`skills.sh`) під конкретний стек проекту (напр., React, Next.js, Playwright, FastAPI) або під час `/init-agents`. |
-| **`/grill-me`** | Безжальне інтерв'ю по дереву рішень: 1–2 питання за раунд із рекомендованим варіантом відповіді (`➡️ Recommended`), доки всі деталі архітектури не узгоджені. |
-| **`/antislop`** | Потужний модульний Anti-Slop фільтр та Delivery Gate (об'єднує 40 правил `antislop.ai.id`, `frontend-design` від Anthropic та `web-design-guidelines` від Vercel): блокує візуальні штампи ШІ, пусті кнопки, баззворди, `—` у текстах, сміттєві коментарі в коді та вимагає Empty/Loading/Error стани й відповідність референсу. |
-| **`/ui-from-reference`** | Перенесення UI 1-в-1 із картинки-референсу без пропуску дрібних деталей: накладає координатну сітку `0..100%` (`ui-ref.py`), ріже екран на 3–5 великих плям-кластерів, запускає паралельних субагентів (`1 кластер = 1 кроп = 1 файл`) із поштучним чек-листом елементів і звіряє живий рендер у Chrome DevTools по сітці. |
-| **`/handoff`** | Заміна `/compact` за принципом «Мементо»: зберігає чисту вижимку без «осаду» в тимчасовий файл, щоб зробити `/clear` і продовжити в межах <100k Smart Zone. |
-| **`/to-spec`** | Синтезує результати інтерв'ю у PRD (User Stories, публічні фасади Deep Modules, контракти, межі тестування, Out of Scope). |
-| **`/to-tickets`** | Нарізає PRD у граф **Vertical Slices (Tracer Bullets)** із залежностями `blocked_by` та мітками `afk` / `hitl` у вибраний Kanban. |
-| **`/tdd`** | Суворий цикл Red -> Green інтеграційними тестами по публічному фасаду модуля проти клонованої сандбокс-БД. |
-| **`/ddd`** | **Doubt-Driven Development** (напарник `/tdd`): презумпція сумніву (`CLAIM -> EXTRACT -> DOUBT -> RECONCILE -> STOP`) для перевірки нетривіальних рішень, race conditions, ідемпотентності та граничних станів у чистому вікні з метою спростувати, а не схвалити. |
-| **`/code-review`** | Двовісне рев'ю дифу в чистому контексті двома паралельними субагентами: **Spec & Vertical Completeness** + **Pushed Standards & Deep Modules**. |
-| **`/implement`** | Виконує тікет (або граф тікетів) в ізольованому worktree + Docker-сандбоксі: `worktree-up.sh -> Implementer (--affected) -> Tester -> Reviewer -> Merger (--full) -> worktree-down.sh`. |
-| **`/codebase-design`** | Словник та правила проектування глибоких модулів (Deep Modules, Seams, Locality, Deletion Test). |
-| **`/improve-architecture`** | Аудит кодової бази: знаходить горизонтальні шари та мілкі модулі і допомагає об'єднати їх у глибокі вертикальні модулі. |
+При вводі `/` у будь-якому агенті (Codex, Claude Code, Cursor, Antigravity) відображаються чіткі підписи дії та підказки аргументів:
 
-### Надбудови (`skills/addons/`) — спеціалізовані розширення
-| Скіл | Призначення |
-| :--- | :--- |
-| **`/sync-contracts`** | Зшиває дві мови (напр., Python/Go бекенд + React/TS фронтенд) через єдиний контракт (`openapi.json` / `.proto` -> кодогенерація клієнта та типізованих MSW-моків) у `verify.sh`. |
-| **`/diagnosing-bugs`** | Піднімає клон живого dev-оточення у worktree, відтворює баг падаючим тестом на фасаді і фіксить його без ризику зламати основну dev-базу. |
-| **`/design-an-interface`** | Принцип «Design It Twice»: запускає паралельних субагентів для проектування радикально різних інтерфейсів фасаду перед вибором найкращого. |
-| **`/security-audit`** | Пошук вразливостей на межах довіри (Cloudflare methodology + OWASP/STRIDE): перевірка на IDOR/BOLA, Auth bypass, ін'єкції, race conditions у платежах та витік секретів із відтворенням у клонованому worktree-сандбоксі. |
-| **`/code-simplification`** | Спрощення та вирівнювання коду після зелених тестів (flatten nesting, guard clauses, видалення зайвих обгорток) при 100% збереженні поведінки. |
+### Ядро (`skills/basic/`) — обов'язковий базовий пайплайн
+| Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
+| :--- | :--- | :--- |
+| **`/init-agents`** | `Scaffold .agents/ workflow: setup Docker sandboxes, worktrees, multi-agent hooks, sub-agents, and AGENTS.md` | Первинне сканування проекту, опитування `grill-me` та генерація всієї агентської інфраструктури. |
+| **`/grill-me [ідея]`** | `Interview me on requirements & architecture before coding (1-2 questions per round with recommendations)` | Узгодження архітектури та крайових випадків без галюцинацій. |
+| **`/to-spec [назва]`** | `Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams` | Зведення відповідей у повноцінний PRD специфікації. |
+| **`/to-tickets [spec.md]`**| `Decompose PRD into Vertical-Slice (Tracer Bullet) tickets with blocked_by DAG dependencies` | Нарізка наскрізних вертикальних тікетів (`DB -> Facade -> UI -> Test`). |
+| **`/implement <id>\|--all`**| `Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review` | Повний цикл реалізації в ізольованому worktree + сандбоксі. |
+| **`/tdd`** | `Enforce strict Red-Green-Refactor TDD on Deep Module facades against real cloned sandbox DB` | Суворий цикл TDD на фасадах проти реальної БД. |
+| **`/ddd [дизайн/диф]`** | `Doubt-Driven Development: fresh-context adversarial review to find concurrency & edge bugs` | Презумпція сумніву в чистому контексті для пошуку прихованих багів. |
+| **`/code-review [base]`** | `Two-axis clean-context code review: spec completeness + deep module architecture standards` | Незалежне рев'ю двома паралельними агентами. |
+| **`/antislop`** | `Anti-Slop Delivery Gate: blocks AI visual cliches, dead buttons, buzzwords & messy code` | Фільтр проти ШІ-шаблонів, пустих кнопок та сміттєвого коду. |
+| **`/ui-from-reference <img.png>`** | `Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents` | Перенесення UI піксель-в-піксель за сіткою та кластерами. |
+| **`/handoff [фокус]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
+| **`/find-skills <стек>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
+| **`/codebase-design`** | `Deep Module architecture rules: narrow public facades, hidden internals, seams & locality` | Архітектурний гайд по Deep Modules та Seams. |
+| **`/improve-architecture`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
+
+### Спеціалізовані розширення (`skills/addons/`)
+| Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
+| :--- | :--- | :--- |
+| **`/sync-contracts`** | `Sync backend & frontend contracts: generate TypeScript client & mocks from OpenAPI/Proto` | Автоматична генерація TS-клієнта та моків з OpenAPI/Proto. |
+| **`/diagnosing-bugs <помилка>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
+| **`/design-an-interface <модуль>`** | `Design It Twice: explore competing Deep Module facade interfaces before implementation` | Створення двох конкуруючих архітектур фасаду. |
+| **`/security-audit [ендпоінт]`** | `Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs` | Пошук вразливостей на межах довіри (OWASP/Cloudflare). |
+| **`/code-simplification [файл]`** | `Simplify green code: flatten nesting, remove boilerplate & guard early without breaking tests` | Спрощення та вирівнювання коду після зелених тестів. |
 
 ---
 
-## 3. Щоденний воркфлоу
+## 3. Структура `.agents/` після ініціалізації
 
-### Крок 0: Ініціалізація в новому або існуючому репозиторії
-Запусти в чаті свого AI-агента:
-```text
-/init-agents
-```
-Агент дослідить репозиторій, проведе коротке опитування і створить у проекті структуру `.agents/`:
+Після виконання `/init-agents` у проекті з'являється структурована директорія `.agents/`:
 ```text
 .agents/
 ├── workflow.json              # Конфіг Kanban, Docker-клонування, моделей та шаблонів оркестрації
 ├── agents/
-│   ├── explorer.md            # Швидкий субагент розвідки коду
+│   ├── explorer.md            # Швидкий субагент розвідки коду (контракти без реалізації)
 │   ├── implementer.md         # Будівник вертикальних зрізів за суворим TDD
 │   ├── tester.md              # Субагент верифікації (екранує логи, визначає blast radius)
 │   ├── reviewer.md            # Рев'юер у чистому контексті із зашитими правилами проекту
@@ -90,30 +116,23 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill code-review
 └── tickets/                   # Вертикальні тікети з blocked_by (при local Kanban)
 ```
 
-### Денна зміна (Human-in-the-Loop)
-1. **Узгодження дизайну:** `/grill-me Хочу додати фічу ...`
-2. **Генерація PRD:** `/to-spec`
-3. **Нарізка на вертикальні тікети (Tracer Bullets):** `/to-tickets`
+---
 
-### Нічна зміна / Реалізація (Worktree + Docker Sandbox)
-- **Прямо в чаті агента (через нативні субагенти):**
-  ```text
-  /implement 001-tracer-bullet
-  # або для всіх незаблокованих AFK-тікетів:
-  /implement --all
-  ```
-- **Або автономним циклом у терміналі:**
-  ```bash
-  # Один тікет:
-  ./.agents/scripts/afk-loop.sh 001-tracer-bullet
+## 4. Нічна зміна: Автономний ранер у терміналі (AFK Loop)
 
-  # Усі незаблоковані AFK-тікети (у режимі sequential-with-review або parallel-dag-with-review):
-  ./.agents/scripts/afk-loop.sh --all
-  ```
+Якщо ви хочете запустити реалізацію тікетів автономно без постійного сидіння в чаті:
+```bash
+# Реалізувати один конкретний тікет:
+./.agents/scripts/afk-loop.sh 001-tracer-bullet
+
+# Запустити автоматичне виконання всіх незаблокованих AFK-тікетів:
+./.agents/scripts/afk-loop.sh --all
+```
+Ранер послідовно або паралельним графом підніматиме worktree, клонуватиме Docker dev-стан, ганятиме тести й рев'ю, та зливатиме гілки.
 
 ---
 
-## 4. Крос-агентні запобіжники та хуки
+## 5. Крос-агентні запобіжники та хуки
 
 Система автоматично підтримує роботу в **Claude Code**, **OpenAI Codex CLI**, **Gemini CLI / Antigravity** та **Cursor** без потреби дублювати файли налаштувань вручну.
 

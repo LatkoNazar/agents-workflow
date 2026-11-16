@@ -1,6 +1,6 @@
 ---
 name: ui-from-reference
-description: "Build UI screens 1:1 from a visual reference image (and optional element sheet) without missing micro-details: overlays a 0..100% coordinate grid, crops 3-5 macro-clusters, spawns non-overlapping parallel sub-agents (1 cluster = 1 crop = 1 file), and verifies the rendered DOM & grid in Chrome DevTools."
+description: "Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents."
 argument-hint: "<path-to-reference.png> [optional-elements-ref.png]"
 disable-model-invocation: true
 ---

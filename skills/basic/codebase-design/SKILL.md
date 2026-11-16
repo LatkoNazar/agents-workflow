@@ -1,6 +1,6 @@
 ---
 name: codebase-design
-description: "Shared architectural vocabulary and rules for Deep Modules, Vertical Slices, Public Seams, Gray-Box Testing, and Locality (inspired by John Ousterhout's A Philosophy of Software Design)."
+description: "Deep Module architecture rules: narrow public facades, hidden internals, seams & locality."
 ---
 
 # Codebase Design: Deep Modules & Vertical Slices

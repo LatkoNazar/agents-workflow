@@ -1,6 +1,7 @@
 ---
 name: grill-me
-description: "Relentlessly interview the user about a feature, plan, or architecture design one decision frontier at a time, offering recommended answers until shared understanding is reached."
+description: "Interview me on requirements & architecture before coding (1-2 questions per round with recommendations)."
+argument-hint: "<feature or architecture idea>"
 disable-model-invocation: true
 ---
 

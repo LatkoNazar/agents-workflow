@@ -1,6 +1,6 @@
 ---
 name: sync-contracts
-description: "Set up or run the Single Source of Truth contract bridge between Backend and Frontend (OpenAPI / Protobuf / GraphQL -> generated TypeScript client & typed MSW mocks) and wire it into verify.sh."
+description: "Sync backend & frontend contracts: generate TypeScript client & mocks from OpenAPI/Proto."
 disable-model-invocation: true
 ---
 

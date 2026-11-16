@@ -1,6 +1,7 @@
 ---
 name: to-spec
-description: "Synthesize the current conversation and grill-me decisions into a destination PRD (Product Requirements Document) defining User Stories, Deep Module facades, Contract changes, Test Seams, and Out of Scope."
+description: "Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams."
+argument-hint: "[optional-spec-name]"
 disable-model-invocation: true
 ---
 

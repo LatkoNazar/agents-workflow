@@ -1,6 +1,7 @@
 ---
 name: find-skills
-description: "Helps users discover and install agent skills when they ask questions like 'how do I do X', 'find a skill for X', 'is there a skill that can...', or during /init-agents to equip project agents with stack-specific skills."
+description: "Search & install official skills for your stack (React, Next.js, FastAPI, etc.)."
+argument-hint: "<framework or keyword>"
 ---
 
 # Find Skills (`/find-skills`)

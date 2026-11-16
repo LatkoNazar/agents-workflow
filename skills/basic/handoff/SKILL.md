@@ -1,7 +1,7 @@
 ---
 name: handoff
-description: "Write a clean, sediment-free handoff document to a temp file so you can /clear the context window and continue in the <100k Smart Zone without using /compact."
-argument-hint: "What will the next session focus on?"
+description: "Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone."
+argument-hint: "[what will the next session focus on?]"
 disable-model-invocation: true
 ---
 

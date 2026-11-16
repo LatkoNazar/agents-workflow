@@ -1,6 +1,7 @@
 ---
 name: improve-architecture
-description: "Audit the codebase for shallow horizontal layers, fragmented files, and leaky boundaries, then propose high-leverage refactorings into Deep Vertical Modules."
+description: "Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules."
+argument-hint: "[target module or directory]"
 disable-model-invocation: true
 ---
 
