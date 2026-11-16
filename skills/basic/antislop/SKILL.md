@@ -30,12 +30,16 @@ Never build UI in a vacuum ("sterile default"). Before generating UI, establish 
 
 Breaking any Hard Gate rule is an automatic **FAIL**:
 
-### A. Functional Completeness & Three Mandatory UI States
-- **Zero Dead Controls:** Every `<button>`, `<a href>`, tab, modal, filter, dropdown, or form must perform a real action wired into the vertical slice. Never ship `onClick={() => {}}`, `href="#"`, or navbar links to non-existent pages.
+### A. Functional Completeness, Real Data & Three Mandatory UI States
+- **Zero Placeholders, Mocks, or "Coming Soon" in UI:**
+  - Never hardcode mock arrays (`const mockOrders = [...]`), `[REAL DATA]`, `[PLACEHOLDER]`, `"Coming soon"`, or `// TODO: connect to API` inside UI components.
+  - **No Backend = No UI Element:** Every metric, list, filter, tab, and button rendered on screen must be wired end-to-end to the real backend vertical slice. If a capability is out of scope for the current ticket, omit the control entirely rather than rendering a decoy.
+  - **Seed the Sandbox DB Instead of Faking UI:** If the cloned dev sandbox database lacks rows needed to render or verify the feature, insert/seed realistic records into the sandbox database (or test fixture)—never fake them in frontend state.
+- **Zero Dead Controls:** Every `<button>`, `<a href>`, tab, modal, filter, dropdown, or form must perform a real action. Never ship `onClick={() => {}}`, `href="#"`, or navbar links to non-existent pages.
 - **Mandatory 3 Data States:** Every view that loads or displays data must implement:
   1. **Loading state:** Skeleton or spinner preserving layout geometry; submit buttons disable and show progress during in-flight requests (`Saving…`).
-  2. **Empty state:** Clear explanation and primary action when a list/query is empty (never a blank box).
-  3. **Error state:** Concrete explanation of what failed and how to retry/fix (inline field errors on forms; never vague `"Oops! Something went wrong"`).
+  2. **Empty state:** Short factual statement + primary action button (`"No projects yet."` + `[New project]`). Never write poetic filler (`"Your dashboard is a blank canvas!"`).
+  3. **Error state:** Pattern: `[What failed]. [Why/cause]. [How to fix].` (e.g., `"Couldn't save changes. Connection lost. Check your connection and try again."`). Never blame the user (`"Invalid input"`), apologize (`"Oops! Something went wrong"`), or show raw error codes.
 
 ### B. Layout, Responsive & Engineering Rules (Vercel + Mobile Gate)
 - **Zero Horizontal Overflow:** `document.documentElement.scrollWidth <= window.innerWidth` on both desktop (`1440px`) and mobile (`390px`).
@@ -52,15 +56,22 @@ Breaking any Hard Gate rule is an automatic **FAIL**:
   - Visible `:focus-visible` indicator on all controls; never use `outline-none` without a `focus-visible:ring-*` replacement.
   - Minimum WCAG AA contrast (`4.5:1` normal text, `3:1` large text; never grey text on grey background).
 
-### C. Copywriting & Data Honesty Gate
-- **Zero Em-Dashes (`—`) in UI Copy:** Never output `—` in UI headings, labels, tooltips, or prose. Use commas, colons, periods, or parentheses.
-- **Specific Verb + Noun CTAs:**
-  - **FORBIDDEN generic CTAs:** `Get Started`, `Learn More`, `Try Now`, `Explore`, `Discover`, `Submit`, `Continue`.
-  - **REQUIRED:** Name the exact action (`Create Order`, `Save API Key`, `Export CSV`). Keep action naming identical between the button (`Publish`) and its feedback toast (`Published`).
-- **Zero AI Marketing Buzzwords:**
-  - **FORBIDDEN:** `AI-Powered`, `Next-Generation`, `Revolutionary`, `Seamless`, `Cutting-Edge`, `Ultimate`, `Effortless`, `Supercharge`.
+### C. UX Writing, Microcopy Clutter & Data Honesty Gate
+- **Zero Fluff Subtitles & Microcopy Clutter:**
+  - **No Redundant Subheaders:** When a page, modal, card, tab, or input title is self-explanatory (`Settings`, `Export data`, `Orders`, `Email`), do **not** add a `text-xs` / `text-sm text-muted` subtitle underneath that repeats the header in longer words (`"Manage your account preferences..."`, `"View and track all your orders in one place"`, `"Easily download a copy of your records"`). Let the heading stand alone.
+  - **No Poetic or Abstract Microcopy:** Never place motivational, mystical, or abstract filler near buttons, tabs, or headers (`"Dive into the magic of..."`, `"Your command center for..."`, `"Unlock your potential"`, `"Everything in one place"`).
+  - **Strict Helper-Text Gate:** Helper text or tooltips are allowed **only** when they state a hard technical constraint or non-obvious consequence (`"Max 50 MB, PDF or PNG"`, `"Token is shown only once"`). Never write tooltips that repeat the button label (`"Click here to delete"`).
+  - **Proportional Confirmations & Dialogs:**
+    - Routine actions use a 1–2 word toast (`"Saved"`, `"Copied"`, `"Profile updated"`), never a full paragraph.
+    - Destructive confirmation dialogs name the exact target and consequence: Title `"Delete 3 files?"`, Body `"This can't be undone."`, Buttons `"Delete files"` / `"Keep files"` (never `"Are you sure?"` with `"OK"` / `"Cancel"`).
+- **Zero Em-Dashes (`—`) & Banned Filler Words:**
+  - Never output `—` in UI headings, labels, tooltips, or prose. Use commas, colons, periods, or parentheses.
+  - **FORBIDDEN filler & buzzwords:** `AI-Powered`, `Next-Generation`, `Revolutionary`, `Seamless`, `Seamlessly`, `Cutting-Edge`, `Ultimate`, `Effortless`, `Supercharge`, `Delve`, `Elevate`, `Empower`, `Easily`, `Simply`, `Just`.
+- **Specific Verb + Noun CTAs (Sentence Case):**
+  - **FORBIDDEN generic CTAs:** `Get Started`, `Learn More`, `Try Now`, `Explore`, `Discover`, `Submit`, `Continue`, `OK`, `Click here`.
+  - **REQUIRED:** Active verb + specific object in sentence case (`Create order`, `Save API key`, `Export CSV`). Keep action naming identical between the button (`Publish`) and its feedback toast (`Published`).
 - **Zero Fabricated Metrics or Claims:**
-  - **FORBIDDEN:** Invented stats (`10K+ Users`, `99.9% Uptime`), fake testimonials, random avatars/names, or unverified security claims (`SOC 2`). Use real data or explicit `[REAL DATA]` placeholders.
+  - **FORBIDDEN:** Invented stats (`10K+ Users`, `99.9% Uptime`), fake testimonials, random avatars/names, or unverified security claims (`SOC 2`). If no real verifiable metric exists, omit the section entirely.
 - **Zero Decorative Emojis in UI:** Never use `🚀`, `✨`, `🔥`, `💡` as UI icons or bullets.
 
 ### D. Code Comment Hygiene (`antislop-code`)

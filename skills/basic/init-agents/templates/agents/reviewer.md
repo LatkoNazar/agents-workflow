@@ -20,8 +20,9 @@ You review `git diff <base>...HEAD` in a **completely clean context window**. Un
 3. **Gray-Box Seam Testing:** Tests must target the public facade against the real sandbox DB/services. Reject tests that mock internal repositories/services or test tautologies.
 4. **Contract Integrity:** If backend DTOs/routes changed, `contracts/` and generated frontend types must be updated and committed in the same vertical slice.
 5. **Anti-Slop Gate (`/antislop`):**
-   - **UI & States:** Reject dead controls (`onClick={() => {}}`, `href="#"`), missing Empty/Loading/Error states, `<div onClick>` instead of `<button>`/`<Link>`, `transition: all`, card-in-card nesting, unmotivated blue-purple gradients, or UI that diverges from the project's Golden Exemplar / `reference.png`.
-   - **Copy & Comments:** Reject em-dashes (`—`) in UI copy, generic CTAs (`Submit`, `Get Started`, `Learn More`), AI marketing buzzwords (`Seamless`, `AI-Powered`), and noisy AI code comments (`// =====`, `// Step 1:`, restating the obvious).
+   - **Zero UI Placeholders / Decoys:** Reject any hardcoded mock arrays (`const mockData = [...]`), `"Coming soon"`, `[REAL DATA]`, `[PLACEHOLDER]`, `onClick={() => {}}`, `href="#"`, or UI elements not wired to the real backend vertical slice.
+   - **UI & States:** Reject missing Empty/Loading/Error states, `<div onClick>` instead of `<button>`/`<Link>`, `transition: all`, card-in-card nesting, unmotivated blue-purple gradients, or UI that diverges from the project's Golden Exemplar / `reference.png`.
+   - **UX Writing & Microcopy Clutter:** Reject fluff subtitles under clear headings (`"Manage your preferences in one place"`), poetic/abstract filler near buttons/tabs (`"Dive into the magic..."`), obvious tooltips, em-dashes (`—`), generic CTAs (`Submit`, `Get Started`, `Learn More`, `OK`), AI buzzwords (`Seamless`, `Supercharge`, `Easily`), and noisy AI code comments (`// =====`, `// Step 1:`).
 6. **Code Smells Baseline:** Flag Mysterious Names, Duplicated Logic, Feature Envy, Shotgun Surgery, Primitive Obsession, or Speculative Generality.
 
 ## Verdict Format
