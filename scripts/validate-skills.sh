@@ -33,6 +33,12 @@ for script in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.sh; do
   echo "✅ Valid bash syntax: $rel"
 done
 
+for pyscript in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.py; do
+  rel="${pyscript#"$ROOT_DIR"/}"
+  python3 -m py_compile "$pyscript"
+  echo "✅ Valid python syntax: $rel"
+done
+
 if [[ "$HAS_ERRORS" == "true" ]]; then
   exit 1
 fi

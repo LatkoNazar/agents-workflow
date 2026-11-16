@@ -99,6 +99,7 @@ Ensure the core workflow skills exist in `.agents/skills/` (and are linked into 
 - `grill-me`
 - `handoff`
 - `antislop`
+- `ui-from-reference`
 - `to-spec`
 - `to-tickets`
 - `tdd`
