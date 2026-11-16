@@ -17,7 +17,13 @@ You run in an **isolated context window** to protect the Implementer and Orchest
 2. **Select & Execute the Right Verification Tier:**
    - **Tier 1 (Internal module change only):** Run `./.agents/scripts/verify.sh --affected` to execute only the modified module's facade tests and typechecks.
    - **Tier 2 (Public facade or contract change):** Run `./.agents/scripts/verify.sh --affected` PLUS integration tests of any module that imports the modified facade, plus `./.agents/scripts/verify.sh --contracts-only`.
-   - **Tier 3 (Full vertical user flow / UI change):** Also run the targeted E2E smoke test (e.g. Playwright spec covering that vertical slice) if configured.
+   - **Tier 3 (Full vertical user flow / UI change — Live Browser & Reference Verification):**
+     - Run Playwright CLI smoke tests (`npx playwright test`) if present for zero-token regression checks.
+     - Use **Chrome DevTools MCP** (`chrome-devtools`) or the native browser sub-agent against the worktree's frontend port to verify:
+       1. **Console & Network:** `0` `console.error` / uncaught exceptions and `0` unexpected `4xx`/`5xx` API responses in the Network tab.
+       2. **Desktop (`1440x900`) & Mobile (`390x844`) Geometry:** Check `scrollWidth <= innerWidth` (zero horizontal overflow), computed styles, and bounding boxes (no overlapping buttons/cards).
+       3. **Interactive Click-Through:** Click every new button, tab, modal, and form control to confirm real end-to-end behavior (Empty, Loading, and Error states).
+       4. **Reference & Exemplar Comparison:** Take screenshots and compare layout density, spacing, and hierarchy against the ticket's `reference.png` or the project's Golden Exemplar screen.
 
 3. **Absorb Raw Logs & Return High-Signal Verdict:**
    - **Never dump thousands of lines of raw test output back to the caller.**

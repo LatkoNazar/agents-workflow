@@ -45,6 +45,14 @@
       "enabled": true,
       "styleSystem": "tailwind-cva",
       "command": "./.agents/scripts/lint-ui.sh"
+    },
+    "browserMcp": {
+      "enabled": true,
+      "provider": "chrome-devtools-mcp",
+      "viewports": {
+        "desktop": "1440x900",
+        "mobile": "390x844"
+      }
     }
   },
   "sandbox": {

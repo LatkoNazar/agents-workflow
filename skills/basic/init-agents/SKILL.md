@@ -61,15 +61,16 @@ Cover these four decision branches (skip any question already answered by the us
 
 ---
 
-❓ **Q3 — Vertical Modules, Contract Bridge & UI Token Linter (`lint-ui.sh`)**:
+❓ **Q3 — Vertical Modules, Contract Bridge & Frontend Verification (`lint-ui.sh` + `chrome-devtools-mcp`)**:
 1. **Vertical Modules & Contracts:** How should we enforce vertical slices (`modules/<domain>/facade.*` + `features/<domain>/index.*`) and automatic Backend <-> Frontend contract sync?
 2. **Optional UI Design-Token & Anti-Slop Linter (`lint-ui.sh`):** Should we generate a deterministic UI linter tailored to this project's styling stack (`<detected: Tailwind/CVA, CSS Modules, SCSS, etc.>`)?
    - **Why it helps (Benefits):**
      - **0 prompt tokens wasted:** Enforces your design tokens, UI primitives (`components/ui/*`), and anti-slop rules deterministically in 0.1s during `verify.sh` instead of bloating prompts with a huge `DESIGN.md`.
      - **Blocks style chaos in `features/*`:** Prevents agents from hardcoding `#hex`/`rgb()` colors, inline `style={{}}`, arbitrary `[...]` values, dead `href="#"` links, or mock arrays in UI components.
    - *(If you decline, we will set `architecture.uiLinter.enabled: false` in `workflow.json` and skip CSS/token linting completely.)*
+3. **Browser Verification via Chrome DevTools MCP (`.mcp.json`):** For frontend projects, should we wire `chrome-devtools-mcp` into `.mcp.json` so the `tester` sub-agent can inspect live Console, Network requests, Computed CSS/Geometry, and compare screenshots (`1440x900` & `390x844`) against your UI references?
 
-➡️ Recommended: <Define target vertical module paths + enable `lint-ui.sh` tailored to the detected CSS/token setup>.
+➡️ Recommended: <Define target vertical module paths + enable `lint-ui.sh` + configure `chrome-devtools-mcp` in `.mcp.json`>.
 
 ---
 
@@ -148,11 +149,14 @@ Using the templates in `./templates/` as your baseline, customize and write the 
    - Inject the project's exact coding standards, deep-module rules, and vertical-slice requirements directly into `reviewer.md` (**Push model**).
    - Symlink or copy `.agents/agents/*.md` into `.claude/agents/` so Claude Code, Antigravity, and other tools discover them natively.
 
-7. **Kanban Directories & Glossary**:
+7. **Optional `.mcp.json` for Chrome DevTools MCP** (from `templates/mcp.json.tpl`):
+   - If the project has a frontend and `browserMcp.enabled == true`, create or merge `chrome-devtools` (`npx -y chrome-devtools-mcp@latest --headless`) into `.mcp.json` at the repo root.
+
+8. **Kanban Directories & Glossary**:
    - If `kanban.provider == "local"`, create `.agents/specs/` and `.agents/tickets/`.
    - Create or update `GLOSSARY.md` at the repo root with core domain terms discovered during reconnaissance.
    - Ensure `.worktrees/` is added to `.gitignore`.
 
-8. **Concise `CLAUDE.md` or `AGENTS.md`** (from `templates/AGENTS.md.tpl`):
+9. **Concise `CLAUDE.md` or `AGENTS.md`** (from `templates/AGENTS.md.tpl`):
    - Edit whichever file already exists (`CLAUDE.md` or `AGENTS.md`), or create `AGENTS.md` (with a symlink `CLAUDE.md -> AGENTS.md`) if neither exists.
    - Keep it **under 100 lines** so every session starts cleanly inside the Smart Zone (<100k tokens).

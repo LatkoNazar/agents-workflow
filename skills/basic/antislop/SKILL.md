@@ -130,6 +130,6 @@ To enforce design tokens and anti-slop rules deterministically at **0 prompt tok
 
 Before finishing any UI or code task, verify all items pass:
 
-- [ ] **Hard Gate PASS:** Zero dead controls (`href="#"` / empty `onClick`), all 3 states (Empty/Loading/Error) implemented, zero em-dashes/buzzwords/generic CTAs, mobile & flex overflow clean (`min-w-0`, `tabular-nums`, no `transition-all`), semantics & `:focus-visible` verified, zero AI-slop code comments.
+- [ ] **Hard Gate PASS:** Zero dead controls (`href="#"` / empty `onClick`), zero UI mocks/placeholders (sandbox DB seeded instead), all 3 states (Empty/Loading/Error) implemented, zero fluff subtitles/em-dashes/buzzwords/generic CTAs, mobile & flex overflow clean (`min-w-0`, `tabular-nums`, no `transition-all`), semantics & `:focus-visible` verified, zero AI-slop code comments.
 - [ ] **Purpose-Gate PASS:** No card-in-card nesting, no unmotivated gradients/glows, no eyebrow pills, no single-word headline highlights, no decorative arrow/sparkle spam.
-- [ ] **Reference & Liveliness PASS:** Matches the project's Golden Exemplar or `reference.png` layout density and holds the declared `ENERGY / RHYTHM / MOTION` dials.
+- [ ] **Live Browser & Reference Gate PASS (`chrome-devtools-mcp` / Playwright):** Page rendered at Desktop (`1440x900`) and Mobile (`390x844`) with `0` Console/Network errors, zero horizontal overflow or bounding-box collisions, interactive controls clicked through, and visual layout verified against the project's Golden Exemplar or `reference.png`.
