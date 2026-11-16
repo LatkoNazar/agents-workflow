@@ -35,7 +35,7 @@ done
 
 for pyscript in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.py; do
   rel="${pyscript#"$ROOT_DIR"/}"
-  python3 -m py_compile "$pyscript"
+  PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile "$pyscript"
   echo "✅ Valid python syntax: $rel"
 done
 
