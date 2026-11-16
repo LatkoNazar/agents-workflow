@@ -18,11 +18,11 @@ Never build UI in a vacuum ("sterile default"). Before generating UI, establish 
 
 1. **Existing Project Exemplar (Golden Screen):** Match the exact layout density, spacing rhythm, component primitives, and palette of an existing screen in the repo.
 2. **Visual Reference (`reference.png` / Figma / URL):** Match the reference's grid proportions, hierarchy, and spacing.
-3. **Explicit Design Read & Three Dials:** Declare a one-line Design Read and set the three dials (`1 = Calm`, `2 = Balanced`, `3 = Bold`):
-   > `Design Read: <page/feature kind> for <audience>, style <direction>, dials ENERGY <1-3> / RHYTHM <1-3> / MOTION <1-3>.`
-   - **ENERGY:** `1` (Linear / GOV.UK) · `2` (Stripe / Vercel) · `3` (Editorial / bold brand)
-   - **RHYTHM:** `1` (Uniform dense grid) · `2` (Consistent with intentional breaks) · `3` (Asymmetric mixed compositions)
-   - **MOTION:** `1` (Hover/focus states only) · `2` (Purposeful transitions) · `3` (Choreographed motion)
+3. **Explicit Design Read & Three Dials:** Declare a one-line Design Read and set the three dials (`1 = Calm`, `2 = Balanced`, `3 = Bold`) based strictly on the project's own domain and user brief (never copy third-party brands):
+   > `Design Read: <page/feature kind> for <audience>, style <project-specific direction>, dials ENERGY <1-3> / RHYTHM <1-3> / MOTION <1-3>.`
+   - **ENERGY:** `1` (Quiet, utilitarian, high data density) · `2` (Balanced contrast and clear visual hierarchy) · `3` (Bold, expressive typography and strong focal contrast)
+   - **RHYTHM:** `1` (Uniform, predictable grid) · `2` (Consistent grid with intentional focal breaks) · `3` (Asymmetric, varied section compositions)
+   - **MOTION:** `1` (Static layout, hover/focus states only) · `2` (Subtle, purposeful micro-transitions) · `3` (Choreographed layout and state transitions)
 
 ---
 
@@ -81,6 +81,8 @@ Reject these common AI visual clichés whenever they appear as unmotivated defau
 - **Default AI Color Palettes & Gradients:**
   - No default blue-to-purple / indigo-to-pink gradients, neon-on-black `#0B0B0B`, or Claude's default warm cream `#F4F1EA` + terracotta `#D97757` unless explicitly mandated by the project's brand.
   - Limit active palette to **2–3 core colors + 1 deliberate accent** (neutrals excluded).
+- **No Unrequested Brand Clones (R-30):**
+  - Never default to cloning the look of Linear, Stripe, Vercel, Notion, or Apple unless the user explicitly asked for that reference. Build around the project's own identity and Golden Exemplars.
 - **Card-in-Card & The SaaS-Card Kit:**
   - Never nest a bordered/shadowed card inside another bordered/shadowed card (`border rounded-xl` inside `border rounded-xl`). Use whitespace, table rows, or `divide-y` dividers instead.
   - Do not chop every section into identical 3-column rounded cards with identical icons and shadows.
