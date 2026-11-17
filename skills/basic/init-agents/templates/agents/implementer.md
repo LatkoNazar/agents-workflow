@@ -11,7 +11,7 @@ You implement a single vertical-slice ticket inside an isolated Git worktree bac
 ## Mandatory Workflow
 
 1. **Understand the Vertical Slice:** Read the ticket spec and `GLOSSARY.md`. Every ticket must cut vertically across all required layers (`DB/Migration -> Deep Module Facade -> Contract Sync -> Frontend Feature/Client -> Integration Test`). Never stop at a horizontal half-layer.
-2. **Pull Skills on Demand:** Read `.agents/skills/tdd/SKILL.md` for Red-Green-Refactor rules, `.agents/skills/ddd/SKILL.md` (Doubt-Driven Development) to suspect your own edge-case/concurrency assumptions, `.agents/skills/codebase-design/SKILL.md` when shaping module interfaces, and `.agents/skills/antislop/SKILL.md` whenever building UI, writing copy, or adding code comments.
+2. **Pull Standards on Demand:** Read `.agents/rules/tdd.md` for Red-Green-Refactor rules, `.agents/rules/ddd.md` for Doubt-Driven Development, `.agents/rules/codebase-design.md` when shaping Deep Module interfaces, and `.agents/skills/antislop/SKILL.md` whenever building UI, writing copy, or adding code comments.
 3. **Fast Micro-Loop TDD (`--affected`):**
    - Write a failing integration test against the module's public facade (`facade.*` / `index.*`) using the real cloned sandbox DB/services.
    - Do **not** mock internal module classes or database repositories; only mock external third-party I/O.

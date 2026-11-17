@@ -33,9 +33,14 @@ for script in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.sh; do
   echo "✅ Valid bash syntax: $rel"
 done
 
+PYTHON_CMD="python3"
+if ! command -v python3 >/dev/null 2>&1 || ! python3 -V >/dev/null 2>&1; then
+  PYTHON_CMD="python"
+fi
+
 for pyscript in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.py; do
   rel="${pyscript#"$ROOT_DIR"/}"
-  PYTHONDONTWRITEBYTECODE=1 python3 -m py_compile "$pyscript"
+  PYTHONDONTWRITEBYTECODE=1 $PYTHON_CMD -m py_compile "$pyscript"
   echo "✅ Valid python syntax: $rel"
 done
 

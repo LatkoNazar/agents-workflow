@@ -152,7 +152,11 @@ Using the templates in `./templates/` as your baseline, customize and write the 
    - Inject the project's exact coding standards, deep-module rules, and vertical-slice requirements directly into `reviewer.md` (**Push model**).
    - Symlink or copy `.agents/agents/*.md` into `.claude/agents/` so Claude Code, Antigravity, and other tools discover them natively.
 
-7. **Agent Hooks Auto-Setup (`setup-hooks.sh`) & Chrome DevTools MCP (`.mcp.json`)**:
+7. **Autonomous Agent Rules in `.agents/rules/*.md`** (from `templates/rules/*.md`):
+   - Copy internal engineering standards (`codebase-design.md`, `tdd.md`, `ddd.md`, `code-review.md`, `sync-contracts.md`, `code-simplification.md`) into `.agents/rules/`.
+   - These rules govern agent behavior autonomously in the background without cluttering the user's interactive `/` slash-command menu.
+
+8. **Agent Hooks Auto-Setup (`setup-hooks.sh`) & Chrome DevTools MCP (`.mcp.json`)**:
    - Copy `hook-pre-bash.sh`, `hook-stop-verify.sh`, and `setup-hooks.sh` from `templates/scripts/` into `.agents/scripts/` (`chmod +x`).
    - Run `./.agents/scripts/setup-hooks.sh`: it checks if native agent hooks exist for **Claude Code** (`.claude/settings.json`), **Codex CLI** (`.codex/hooks.json`), **Gemini CLI** (`.gemini/settings.json`), and **Cursor** (`.cursor/hooks.json`), and creates/merges all 4 simultaneously if missing:
      - **`PreToolUse` (`hook-pre-bash.sh`):** Hard-blocks (`deny`) destructive commands (`git push --force`, `git reset --hard`, `git clean -f`, `git add .env`, `rm -rf ..`) and prompts the user (`ask`) before any normal `git push` so you always control remote pushes.

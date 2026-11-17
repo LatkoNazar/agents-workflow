@@ -57,11 +57,11 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 
 ---
 
-## 2. Каталог скілів (`basic` та `addons`)
+## 2. Каталог скілів (`skills/`) та правил (`rules/`)
 
-При вводі `/` у будь-якому агенті (Codex, Claude Code, Cursor, Antigravity) відображаються чіткі англомовні підписи дії та підказки аргументів:
+При вводі `/` у будь-якому агенті (Codex, Claude Code, Cursor, Antigravity) відображаються **виключно інтерактивні команди для розробника**. Усі технічні стандарти коду та перевірки винесені у внутрішні правила (`rules/`) і діють під капотом, не засмічуючи меню автокомпліту.
 
-### Ядро (`skills/basic/`) — обов'язковий базовий пайплайн
+### 🟢 Інтерактивні сліш-команди для розробника (`skills/`)
 | Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
 | :--- | :--- | :--- |
 | **`/init-agents`** | `Scaffold .agents/ workflow: setup Docker sandboxes, worktrees, multi-agent hooks, sub-agents, and AGENTS.md` | Первинне сканування проекту, опитування `grill-me` та генерація всієї агентської інфраструктури. |
@@ -69,24 +69,25 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 | **`/to-spec [spec-name]`** | `Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams` | Зведення відповідей у повноцінний PRD специфікації. |
 | **`/to-tickets [spec.md]`**| `Decompose PRD into Vertical-Slice (Tracer Bullet) tickets with blocked_by DAG dependencies` | Нарізка наскрізних вертикальних тікетів (`DB -> Facade -> UI -> Test`). |
 | **`/implement <ticket-id>\|--all`**| `Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review` | Повний цикл реалізації в ізольованому worktree + сандбоксі. |
-| **`/tdd`** | `Enforce strict Red-Green-Refactor TDD on Deep Module facades against real cloned sandbox DB` | Суворий цикл TDD на фасадах проти реальної БД. |
-| **`/ddd [claim/diff]`** | `Doubt-Driven Development: fresh-context adversarial review to find concurrency & edge bugs` | Презумпція сумніву в чистому контексті для пошуку прихованих багів. |
-| **`/code-review [base-ref]`** | `Two-axis clean-context code review: spec completeness + deep module architecture standards` | Незалежне рев'ю двома паралельними агентами. |
 | **`/antislop`** | `Anti-Slop Delivery Gate: blocks AI visual cliches, dead buttons, buzzwords & messy code` | Фільтр проти ШІ-шаблонів, пустих кнопок та сміттєвого коду. |
 | **`/ui-from-reference <reference.png>`** | `Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents` | Перенесення UI піксель-в-піксель за сіткою та кластерами. |
-| **`/handoff [next-focus]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
-| **`/find-skills <stack-or-topic>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
-| **`/codebase-design`** | `Deep Module architecture rules: narrow public facades, hidden internals, seams & locality` | Архітектурний гайд по Deep Modules та Seams. |
-| **`/improve-architecture [module]`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
-
-### Спеціалізовані розширення (`skills/addons/`)
-| Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
-| :--- | :--- | :--- |
-| **`/sync-contracts`** | `Sync backend & frontend contracts: generate TypeScript client & mocks from OpenAPI/Proto` | Автоматична генерація TS-клієнта та моків з OpenAPI/Proto. |
-| **`/diagnosing-bugs <bug-or-error>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
 | **`/design-an-interface <module-name>`** | `Design It Twice: explore competing Deep Module facade interfaces before implementation` | Створення двох конкуруючих архітектур фасаду. |
 | **`/security-audit [endpoint-or-pr]`** | `Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs` | Пошук вразливостей на межах довіри (OWASP/Cloudflare). |
-| **`/code-simplification [file-path]`** | `Simplify green code: flatten nesting, remove boilerplate & guard early without breaking tests` | Спрощення та вирівнювання коду після зелених тестів. |
+| **`/diagnosing-bugs <bug-or-error>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
+| **`/improve-architecture [module]`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
+| **`/handoff [next-focus]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
+| **`/find-skills <stack-or-topic>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
+
+### ⚙️ Внутрішні правила агентів (`rules/` — діють автоматично під капотом)
+Ці стандарти вшиті в системні промпти відповідних ролей у `.agents/agents/` та виконуються автономно:
+| Правило | Роль, яка застосовує | Що робить |
+| :--- | :--- | :--- |
+| **`codebase-design.md`** | `implementer`, `reviewer` | Архітектурний стандарт Deep Modules: вузькі публічні фасади (`facade.*`, `index.*`), приховані нутрощі (`internal/`), висока локальність. |
+| **`tdd.md`** | `implementer` | Суворий цикл Red-Green-Refactor проти реальної БД у сандбоксі перед написанням коду. |
+| **`ddd.md`** | `reviewer`, `tester` | Doubt-Driven Development: презумпція сумніву, пошук race conditions, дедлоків та крайових випадків у чистому контексті. |
+| **`code-review.md`** | `reviewer` | Двохосьове рев'ю: повнота вертикального зрізу за ТЗ + архітектурні межі модулів. |
+| **`sync-contracts.md`** | `implementer`, `merger` | Автоматичний контрактний синк між бекендом (OpenAPI) та фронтендом (TypeScript) при кожній зміні DTO/API. |
+| **`code-simplification.md`** | `reviewer`, `implementer` | Спрощення та вирівнювання коду: видалення зайвих шарів абстракції та бойлерплейту після проходження тестів. |
 
 ---
 
