@@ -13,17 +13,17 @@
 npx skills add https://github.com/LatkoNazar/agents-workflow
 
 # Або встановити тільки базовий набір:
-npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
+npx skills add https://github.com/LatkoNazar/agents-workflow --skill aw-init-agents
 ```
 
-### Крок 2. Перша ініціалізація (`/init-agents`)
+### Крок 2. Перша ініціалізація (`/aw-init-agents`)
 Відкрий чат будь-якого агента (**Claude Code, Codex CLI, Cursor, Antigravity**) та введи:
 ```text
-/init-agents
+/aw-init-agents
 ```
 Агент:
 1. Дослідить стек твого проекту (бекенд, фронтенд, БД, docker-compose).
-2. Задасть 4 короткі питання по `grill-me` (з готовими рекомендованими відповідями `➡️ Recommended`).
+2. Задасть 4 короткі питання по `aw-grill-me` (з готовими рекомендованими відповідями `➡️ Recommended`).
 3. Згенерує структуру `.agents/` зі скриптами Docker-клонування БД, worktree-сандбоксами та налаштує захисні хуки для всіх агентів.
 
 ### Крок 3. Щоденна розробка фіч (покроковий цикл)
@@ -31,27 +31,27 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 
 1. **Узгодження деталей та архітектури (без галюцинацій):**
    ```text
-   /grill-me I want to add Stripe subscription billing
+   /aw-grill-me I want to add Stripe subscription billing
    ```
    *Агент опитає тебе раундами по 1–2 питання з варіантами рішень, доки всі крайові випадки не будуть узгоджені.*
 
 2. **Генерація структурованої специфікації (PRD):**
    ```text
-   /to-spec
+   /aw-to-spec
    ```
    *Створює PRD: User Stories, публічні фасади модулів, API контракти, тестові шви та Out of Scope.*
 
 3. **Нарізка на вертикальні тікети (Tracer Bullets):**
    ```text
-   /to-tickets
+   /aw-to-tickets
    ```
    *Ділить задачу не горизонтальними шарами, а наскрізними вертикальними зрізами (`DB -> Facade -> Contract -> UI -> Integration Test`) із графом залежностей.*
 
 4. **Реалізація у захищеному сандбоксі:**
    ```text
-   /implement 001-stripe-webhook
+   /aw-implement 001-stripe-webhook
    # або для виконання всіх незаблокованих тікетів:
-   /implement --all
+   /aw-implement --all
    ```
    *Агент підніме чистий Git worktree + клон твоєї dev-бази даних, напише код за суворим TDD, пройде рев'ю в чистому вікні, запустить `verify.sh` і зільє гілку.*
 
@@ -64,19 +64,19 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 ### 🟢 Інтерактивні сліш-команди для розробника (`skills/`)
 | Скіл (сліш-команда) | Підпис в автокомпліті | Призначення |
 | :--- | :--- | :--- |
-| **`/init-agents`** | `Scaffold .agents/ workflow: setup Docker sandboxes, worktrees, multi-agent hooks, sub-agents, and AGENTS.md` | Первинне сканування проекту, опитування `grill-me` та генерація всієї агентської інфраструктури. |
-| **`/grill-me [idea]`** | `Interview me on requirements & architecture before coding (1-2 questions per round with recommendations)` | Узгодження архітектури та крайових випадків без галюцинацій. |
-| **`/to-spec [spec-name]`** | `Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams` | Зведення відповідей у повноцінний PRD специфікації. |
-| **`/to-tickets [spec.md]`**| `Decompose PRD into Vertical-Slice (Tracer Bullet) tickets with blocked_by DAG dependencies` | Нарізка наскрізних вертикальних тікетів (`DB -> Facade -> UI -> Test`). |
-| **`/implement <ticket-id>\|--all`**| `Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review` | Повний цикл реалізації в ізольованому worktree + сандбоксі. |
-| **`/antislop`** | `Anti-Slop Delivery Gate: blocks AI visual cliches, dead buttons, buzzwords & messy code` | Фільтр проти ШІ-шаблонів, пустих кнопок та сміттєвого коду. |
-| **`/ui-from-reference <reference.png>`** | `Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents` | Перенесення UI піксель-в-піксель за сіткою та кластерами. |
-| **`/design-an-interface <module-name>`** | `Design It Twice: explore competing Deep Module facade interfaces before implementation` | Створення двох конкуруючих архітектур фасаду. |
-| **`/security-audit [endpoint-or-pr]`** | `Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs` | Пошук вразливостей на межах довіри (OWASP/Cloudflare). |
-| **`/diagnosing-bugs <bug-or-error>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
-| **`/improve-architecture [module]`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
-| **`/handoff [next-focus]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
-| **`/find-skills <stack-or-topic>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
+| **`/aw-init-agents`** | `Scaffold .agents/ workflow: setup Docker sandboxes, worktrees, multi-agent hooks, sub-agents, and AGENTS.md` | Первинне сканування проекту, опитування `aw-grill-me` та генерація всієї агентської інфраструктури. |
+| **`/aw-grill-me [idea]`** | `Interview me on requirements & architecture before coding (1-2 questions per round with recommendations)` | Узгодження архітектури та крайових випадків без галюцинацій. |
+| **`/aw-to-spec [spec-name]`** | `Synthesize grill-me decisions into a structured PRD with Deep Module facades, contracts & test seams` | Зведення відповідей у повноцінний PRD специфікації. |
+| **`/aw-to-tickets [spec.md]`**| `Decompose PRD into Vertical-Slice (Tracer Bullet) tickets with blocked_by DAG dependencies` | Нарізка наскрізних вертикальних тікетів (`DB -> Facade -> UI -> Test`). |
+| **`/aw-implement <ticket-id>\|--all`**| `Implement ticket(s) in isolated Git worktree with Docker dev sandbox, TDD & code review` | Повний цикл реалізації в ізольованому worktree + сандбоксі. |
+| **`/aw-antislop`** | `Anti-Slop Delivery Gate: blocks AI visual cliches, dead buttons, buzzwords & messy code` | Фільтр проти ШІ-шаблонів, пустих кнопок та сміттєвого коду. |
+| **`/aw-ui-from-reference <reference.png>`** | `Build UI 1:1 from screenshot using 0..100% coordinate grid & parallel cluster sub-agents` | Перенесення UI піксель-в-піксель за сіткою та кластерами. |
+| **`/aw-design-an-interface <module-name>`** | `Design It Twice: explore competing Deep Module facade interfaces before implementation` | Створення двох конкуруючих архітектур фасаду. |
+| **`/aw-security-audit [endpoint-or-pr]`** | `Security audit & trust boundary check: hunt for IDOR, auth bypass, race & injection bugs` | Пошук вразливостей на межах довіри (OWASP/Cloudflare). |
+| **`/aw-diagnosing-bugs <bug-or-error>`** | `Reproduce and fix bugs with a failing test inside isolated worktree & cloned dev DB` | Відтворення бага падаючим тестом у worktree-сандбоксі. |
+| **`/aw-improve-architecture [module]`** | `Audit codebase architecture: detect shallow horizontal layers and refactor into deep modules` | Аудит та рефакторинг роздутих шарів у глибокі модулі. |
+| **`/aw-handoff [next-focus]`** | `Save clean session state to a handoff file so you can /clear and keep <100k Smart Zone` | Збереження вижимки перед очищенням контексту. |
+| **`/aw-find-skills <stack-or-topic>`** | `Search & install official skills for your stack (React, Next.js, FastAPI, etc.)` | Пошук зовнішніх скілів з екосистеми skills.sh під ваш стек. |
 
 ### ⚙️ Внутрішні правила агентів (`rules/` — діють автоматично під капотом)
 Ці стандарти вшиті в системні промпти відповідних ролей у `.agents/agents/` та виконуються автономно:
@@ -93,7 +93,7 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 
 ## 3. Структура `.agents/` після ініціалізації
 
-Після виконання `/init-agents` у проекті з'являється структурована директорія `.agents/`:
+Після виконання `/aw-init-agents` у проекті з'являється структурована директорія `.agents/`:
 ```text
 .agents/
 ├── workflow.json              # Конфіг Kanban, Docker-клонування, моделей та шаблонів оркестрації
@@ -145,7 +145,7 @@ npx skills add https://github.com/LatkoNazar/agents-workflow --skill init-agents
 - Файл `AGENTS.md` тримається **до 100 рядків** для збереження сесії в межах **Smart Zone (<100k токенів)**.
 
 ### Нативні запобіжники (`setup-hooks.sh`)
-При виконанні `/init-agents` або при кожному виклику `verify.sh`, скрипт `setup-hooks.sh` автоматично перевіряє та підключає конфігурації для всіх 4 середовищ одночасно:
+При виконанні `/aw-init-agents` або при кожному виклику `verify.sh`, скрипт `setup-hooks.sh` автоматично перевіряє та підключає конфігурації для всіх 4 середовищ одночасно:
 - `.claude/settings.json` (Claude Code)
 - `.codex/hooks.json` (Codex CLI)
 - `.gemini/settings.json` (Gemini CLI / Antigravity)

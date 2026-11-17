@@ -27,7 +27,7 @@ while IFS= read -r -d '' file; do
   echo "✅ Valid skill: $rel"
 done < <(find "$SKILLS_DIR" -name "SKILL.md" -print0 | sort -z)
 
-for script in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.sh; do
+for script in "$ROOT_DIR"/skills/basic/aw-init-agents/templates/scripts/*.sh; do
   rel="${script#"$ROOT_DIR"/}"
   bash -n "$script"
   echo "✅ Valid bash syntax: $rel"
@@ -38,7 +38,7 @@ if ! command -v python3 >/dev/null 2>&1 || ! python3 -V >/dev/null 2>&1; then
   PYTHON_CMD="python"
 fi
 
-for pyscript in "$ROOT_DIR"/skills/basic/init-agents/templates/scripts/*.py; do
+for pyscript in "$ROOT_DIR"/skills/basic/aw-init-agents/templates/scripts/*.py; do
   rel="${pyscript#"$ROOT_DIR"/}"
   PYTHONDONTWRITEBYTECODE=1 $PYTHON_CMD -m py_compile "$pyscript"
   echo "✅ Valid python syntax: $rel"
